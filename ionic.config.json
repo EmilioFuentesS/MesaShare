@@ -1,0 +1,7 @@
+{
+  "name": "MesaShare",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
