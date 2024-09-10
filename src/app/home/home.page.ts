@@ -8,6 +8,7 @@ import { AnimationController } from '@ionic/angular';
 })
 export class HomePage implements AfterViewInit {
 
+/*ANIMACION */ 
   @ViewChild('animatedImage', { read: ElementRef, static: true }) animatedImage!: ElementRef;
 
   constructor(private animationCtrl: AnimationController) {}
@@ -26,6 +27,7 @@ export class HomePage implements AfterViewInit {
   
     imageAnimation.play();
   }
+  
   
   
 }

@@ -31,7 +31,11 @@
       La contraseña debe tener al menos 4 números, 3 letras y 1 mayúscula.
     </ion-note>
 
-    <ion-button expand="full" type="submit" [disabled]="!loginForm.valid">Ingresar</ion-button>
-    <ion-button expand="full" color="medium" (click)="resetPassword()">Restablecer Contraseña</ion-button>
+    <!-- Botón de Ingresar con routerLink -->
+ <ion-button expand="full" type="submit" [disabled]="!loginForm.valid" [routerLink]="['/inicio']">
+  Ingresar
+</ion-button>
+    <ion-button expand="full" color="medium" (click)="resetPassword()" [routerLink]="['/recuperar']">Restablecer Contraseña</ion-button>
   </form>
 </ion-content>
+

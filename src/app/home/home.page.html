@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Blank
+      MesaShare
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -9,22 +9,24 @@
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
+      <ion-title size="large">MesaShare</ion-title>
     </ion-toolbar>
   </ion-header>
 
   <!-- Imagen centrada con animación -->
   <div class="image-container">
-    <img #animatedImage class="animated-image" src="assets/imgs/logo.png" alt="Your Image" />
+    <img #animatedImage class="animated-image" src="assets/imgs/logo.png" alt="LogoMesaShare" />
   </div>
 
   <!-- Contenedor para los botones debajo de la imagen -->
   <div class="button-container">
-    <ion-button expand="block" color="primary">Continuar como invitado</ion-button>
-    <ion-button expand="block" color="secondary">Iniciar Sesión</ion-button>
-    <!-- Texto subrayado debajo de los botones -->
+    <!-- Botones con routerLink para navegación interna -->
+    <ion-button expand="block" color="primary" [routerLink]="['/inicio']">Continuar como invitado</ion-button>
+    <ion-button expand="block" color="secondary" [routerLink]="['/login']">Iniciar Sesión</ion-button>
+
+    <!-- Texto subrayado con routerLink -->
     <div class="register-link">
-      <a href="/registro" class="register-text">Registrar</a>
+      <a [routerLink]="['/registrar']" class="register-text">Registrar</a>
     </div>
   </div>
 

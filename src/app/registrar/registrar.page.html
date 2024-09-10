@@ -53,6 +53,6 @@
       Las contraseñas no coinciden.
     </ion-note>
 
-    <ion-button expand="full" type="submit" [disabled]="!registrarForm.valid">Registrar</ion-button>
+    <ion-button expand="full" type="submit" [disabled]="!registrarForm.valid" [routerLink]="['/login']">Registrar</ion-button>
   </form>
 </ion-content>

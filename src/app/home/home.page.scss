@@ -1,32 +1,75 @@
+/* Contenedor de la imagen */
 .image-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
-  margin-top: -200px; /* Ajusta este valor para subir más o menos la imagen */
+  height: 50vh; /* Ajusta la altura si es necesario */
+  max-height: 300px; /* Limita la altura máxima de la imagen */
+  margin: 0 auto;
+  overflow: hidden; /* Asegura que no se desborde el contenido */
+  padding: 20px; /* Añade algo de espacio alrededor de la imagen */
+  box-sizing: border-box; /* Incluye el padding en el cálculo del tamaño */
 }
 
+/* Imagen animada */
 .animated-image {
   width: 150px;
   height: auto;
   opacity: 0; /* Inicialmente oculta la imagen */
 }
 
+/* Estilo del carrusel */
+ion-slides {
+  height: 150px; /* Ajusta la altura del carrusel si es necesario */
+  margin: 20px 0; /* Espacio arriba y abajo del carrusel */
+}
 
+.slide-text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-size: 18px; /* Tamaño del texto */
+  font-weight: bold; /* Opcional: hace el texto más prominente */
+  text-align: center;
+  padding: 0 10px; /* Añade espacio horizontal alrededor del texto */
+}
+
+/* Contenedor de botones */
 .button-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 20px;
-  margin-top: -50px; /* Ajusta este valor para mover los botones hacia arriba */
+  position: absolute; /* Asegura que el contenedor se posicione relativo a la pantalla */
+  bottom: 20px; /* Posiciona el contenedor en la parte inferior */
+  left: 50%; /* Centra horizontalmente el contenedor */
+  transform: translateX(-50%); /* Corrige el centrado horizontal */
+  width: 100%; /* Asegura que el contenedor ocupa el ancho completo de la pantalla */
+  box-sizing: border-box; /* Incluye el padding en el cálculo del tamaño */
 }
 
+/* Estilo de los botones */
 ion-button {
-  width: 70%; /* Ajusta el tamaño del botón */
+  width: 90%; /* Ajusta el tamaño del botón para ocupar la mayor parte del contenedor */
+  max-width: 400px; /* Limita el tamaño máximo del botón */
   margin-top: 10px; /* Espaciado entre los botones */
+  --border-radius: 12px; /* Bordes redondeados para un diseño moderno */
+  --padding-start: 16px; /* Relleno interno */
+  --padding-end: 16px;
+  --font-size: 16px; /* Tamaño del texto en el botón */
+  --height: 50px; /* Altura del botón para mejorar la accesibilidad */
+  --background: var(--ion-color-primary); /* Color de fondo del botón */
+  --color: white; /* Color del texto en el botón */
 }
 
+/* Botón secundario */
+ion-button[color="secondary"] {
+  --background: var(--ion-color-secondary); /* Color de fondo del botón secundario */
+  --color: white; /* Color del texto en el botón secundario */
+}
 
+/* Texto subrayado con routerLink */
 .register-link {
   margin-top: 20px; /* Espacio entre los botones y el texto */
 }

@@ -8,6 +8,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 })
 export class RecuperarPage {
   recuperarForm: FormGroup;
+  presentingElement: any = null;
 
   constructor(private fb: FormBuilder) {
     this.recuperarForm = this.fb.group({
@@ -15,11 +16,17 @@ export class RecuperarPage {
     });
   }
 
+  ngOnInit() {
+    this.presentingElement = document.querySelector('.ion-page');
+  }
+
+  // Método para enviar el formulario
   onSubmit() {
     if (this.recuperarForm.valid) {
       const { email } = this.recuperarForm.value;
-      // Lógica para enviar el correo de recuperación de contraseña
       console.log('Correo para recuperar contraseña enviado a:', email);
+
+      // Aquí se abrirá automáticamente el modal con el trigger de Ionic.
     }
   }
 }
