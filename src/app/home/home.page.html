@@ -13,8 +13,19 @@
     </ion-toolbar>
   </ion-header>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+  <!-- Imagen centrada con animación -->
+  <div class="image-container">
+    <img #animatedImage class="animated-image" src="assets/imgs/logo.png" alt="Your Image" />
   </div>
+
+  <!-- Contenedor para los botones debajo de la imagen -->
+  <div class="button-container">
+    <ion-button expand="block" color="primary">Continuar como invitado</ion-button>
+    <ion-button expand="block" color="secondary">Iniciar Sesión</ion-button>
+    <!-- Texto subrayado debajo de los botones -->
+    <div class="register-link">
+      <a href="/registro" class="register-text">Registrar</a>
+    </div>
+  </div>
+
 </ion-content>
