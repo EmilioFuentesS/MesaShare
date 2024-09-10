@@ -1,13 +1,58 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>registrar</ion-title>
+    <ion-title>Registro</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">registrar</ion-title>
+      <ion-title size="large">Registro</ion-title>
     </ion-toolbar>
   </ion-header>
+
+  <form [formGroup]="registrarForm" (ngSubmit)="onSubmit()">
+    <ion-item>
+      <ion-label position="floating">Usuario</ion-label>
+      <ion-input formControlName="username"></ion-input>
+    </ion-item>
+    <ion-note *ngIf="registrarForm.get('username')?.hasError('required')" color="danger">
+      El nombre de usuario es obligatorio.
+    </ion-note>
+
+    <ion-item>
+      <ion-label position="floating">Correo Electrónico</ion-label>
+      <ion-input formControlName="email" type="email"></ion-input>
+    </ion-item>
+    <ion-note *ngIf="registrarForm.get('email')?.hasError('required')" color="danger">
+      El correo electrónico es obligatorio.
+    </ion-note>
+    <ion-note *ngIf="registrarForm.get('email')?.hasError('email')" color="danger">
+      Por favor, introduce un correo electrónico válido.
+    </ion-note>
+
+    <ion-item>
+      <ion-label position="floating">Contraseña</ion-label>
+      <ion-input type="password" formControlName="password"></ion-input>
+    </ion-item>
+    <ion-note *ngIf="registrarForm.get('password')?.hasError('required')" color="danger">
+      La contraseña es obligatoria.
+    </ion-note>
+    <ion-note *ngIf="registrarForm.get('password')?.hasError('invalidPassword')" color="danger">
+      La contraseña debe tener al menos 4 números, 3 letras y 1 mayúscula.
+    </ion-note>
+
+    <ion-item>
+      <ion-label position="floating">Confirmar Contraseña</ion-label>
+      <ion-input type="password" formControlName="confirmPassword"></ion-input>
+    </ion-item>
+    <ion-note *ngIf="registrarForm.get('confirmPassword')?.hasError('required')" color="danger">
+      La confirmación de la contraseña es obligatoria.
+    </ion-note>
+    <ion-note *ngIf="registrarForm.hasError('passwordMismatch')" color="danger">
+      Las contraseñas no coinciden.
+    </ion-note>
+
+    <ion-button expand="full" type="submit" [disabled]="!registrarForm.valid">Registrar</ion-button>
+  </form>
 </ion-content>

@@ -1,13 +1,62 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>inicio</ion-title>
+    <ion-title>Dividir cuenta</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">inicio</ion-title>
+      <ion-title size="large">Dividir cuenta</ion-title>
     </ion-toolbar>
   </ion-header>
+
+  <!-- Selección de número de personas -->
+  <ion-item>
+    <ion-label position="floating">Número de personas</ion-label>
+    <ion-input type="number" [(ngModel)]="numPersonas"></ion-input>
+  </ion-item>
+  <ion-button expand="full" (click)="generarPersonas()">Generar personas</ion-button>
+
+  <!-- Iconos de personas -->
+  <ion-list>
+    <ion-item *ngFor="let persona of personas">
+      <ion-button (click)="seleccionarPersona(persona)" [color]="personaSeleccionada === persona ? 'primary' : 'light'">
+        {{ persona }}
+      </ion-button>
+    </ion-item>
+  </ion-list>
+
+  <!-- Menú de selección de ítems -->
+  <ion-list *ngIf="menuItems.length > 0">
+    <ion-card>
+      <ion-card-header>
+        Menú
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item *ngFor="let item of menuItems">
+          <ion-label>{{ item.nombre }} - ${{ item.precio }}</ion-label>
+          <ion-button (click)="seleccionarItem(item)" [disabled]="!personaSeleccionada">Seleccionar</ion-button>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+  </ion-list>
+
+  <!-- Lista de pedidos por persona con botón "Vaciar Pedido" en cada tarjeta -->
+  <ion-list>
+    <ion-card *ngFor="let persona of personas">
+      <ion-card-header>
+        Pedido de {{ persona }}
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item *ngFor="let pedido of pedidos[persona]">
+          <ion-label>{{ pedido.nombre }} - ${{ pedido.precio }}</ion-label>
+        </ion-item>
+        <ion-button expand="full" color="danger" (click)="vaciarPedido(persona)">Vaciar Pedido</ion-button>
+      </ion-card-content>
+    </ion-card>
+  </ion-list>
+
+  <!-- Botón para avanzar al siguiente paso -->
+  <ion-button expand="full" (click)="avanzar()" [disabled]="!todoAsignado()">Siguiente</ion-button>
 </ion-content>
