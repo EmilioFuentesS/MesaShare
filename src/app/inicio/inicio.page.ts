@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
+import { IonMenu, NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-inicio',
@@ -6,6 +7,8 @@ import { Component } from '@angular/core';
   styleUrls: ['./inicio.page.scss'],
 })
 export class InicioPage {
+  @ViewChild(IonMenu) menu?: IonMenu;
+
   numPersonas: number = 0;
   personas: string[] = [];
   menuItems = [
@@ -24,9 +27,31 @@ export class InicioPage {
   pedidos: { [key: string]: any[] } = {};
   personaSeleccionada: string | null = null;
 
-  constructor() {}
+  constructor(private navCtrl: NavController) {}
 
-  generarPersonas() {
+  ionViewWillEnter() {
+    // Cierra el menú cuando entras a la página de inicio
+    if (this.menu) {
+      this.menu.close();
+    }
+  }
+
+  // Función para aumentar el número de personas
+  aumentarPersonas() {
+    this.numPersonas++;
+    this.actualizarPersonas();
+  }
+
+  // Función para disminuir el número de personas
+  disminuirPersonas() {
+    if (this.numPersonas > 0) {
+      this.numPersonas--;
+      this.actualizarPersonas();
+    }
+  }
+
+  // Función para actualizar la lista de personas cuando el número cambia
+  actualizarPersonas() {
     this.personas = [];
     this.pedidos = {};
     for (let i = 1; i <= this.numPersonas; i++) {
@@ -44,33 +69,26 @@ export class InicioPage {
 
   seleccionarItem(item: { nombre: string; precio: number }) {
     if (this.personaSeleccionada) {
-      // Añadir el ítem al pedido de la persona seleccionada
       if (!this.pedidos[this.personaSeleccionada]) {
         this.pedidos[this.personaSeleccionada] = [];
       }
       this.pedidos[this.personaSeleccionada].push(item);
-
-      // Eliminar el ítem del menú
       this.menuItems = this.menuItems.filter(menuItem => menuItem.nombre !== item.nombre);
     }
   }
 
   vaciarPedido(persona: string) {
     if (this.pedidos[persona]) {
-      // Restaurar los ítems al menú
       this.pedidos[persona].forEach(item => {
         if (!this.menuItems.some(menuItem => menuItem.nombre === item.nombre)) {
           this.menuItems.push(item);
         }
       });
-
-      // Vaciar el pedido de la persona
       this.pedidos[persona] = [];
     }
   }
 
   todoAsignado(): boolean {
-    // Verifica si todos los ítems han sido seleccionados
     return this.menuItems.length === 0;
   }
 
