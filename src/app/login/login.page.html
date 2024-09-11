@@ -5,37 +5,43 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Login</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+  <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="login-form">
+    
     <ion-item>
-      <ion-label position="floating">Usuario</ion-label>
+      <ion-label position="floating">Usuario<span class="required">*</span></ion-label>
       <ion-input formControlName="username"></ion-input>
     </ion-item>
-    <ion-note *ngIf="loginForm.get('username')?.hasError('required')" color="danger">
-      El usuario es obligatorio.
-    </ion-note>
+    <div *ngIf="loginForm.get('username')?.touched" class="validation-messages">
+      <div *ngIf="loginForm.get('username')?.hasError('required')">
+        El usuario es obligatorio.
+      </div>
+    </div>
 
     <ion-item>
-      <ion-label position="floating">Contraseña</ion-label>
+      <ion-label position="floating">Contraseña<span class="required">*</span></ion-label>
       <ion-input type="password" formControlName="password"></ion-input>
     </ion-item>
-    <ion-note *ngIf="loginForm.get('password')?.hasError('required')" color="danger">
-      La contraseña es obligatoria.
-    </ion-note>
-    <ion-note *ngIf="loginForm.get('password')?.hasError('passwordStrength')" color="danger">
-      La contraseña debe tener al menos 4 números, 3 letras y 1 mayúscula.
-    </ion-note>
+    <div *ngIf="loginForm.get('password')?.touched" class="validation-messages">
+      <ul *ngIf="loginForm.get('password')?.hasError('required')">
+        <li>La contraseña es obligatoria.</li>
+      </ul>
+      <ul *ngIf="loginForm.get('password')?.hasError('passwordStrength')">
+        <li>Debe contener al menos 4 números.</li>
+        <li>Debe contener al menos 3 letras.</li>
+        <li>Debe contener al menos 1 mayúscula.</li>
+      </ul>
+    </div>
 
-    <!-- Botón de Ingresar con routerLink -->
- <ion-button expand="full" type="submit" [disabled]="!loginForm.valid" [routerLink]="['/inicio']">
+
+
+  <!-- Contenedor para los botones debajo -->
+  <div class="button-container">
+     <!-- Botón de Ingresar -->
+     <ion-button class="login" expand="full" type="submit" [disabled]="!loginForm.valid" [routerLink]="['/inicio']">
   Ingresar
-</ion-button>
-    <ion-button expand="full" color="medium" (click)="resetPassword()" [routerLink]="['/recuperar']">Restablecer Contraseña</ion-button>
-  </form>
-</ion-content>
-
+     </ion-button>
+    <!-- Botones con routerLink para navegación interna -->
+    <ion-button class="recuperar" expand="full" (click)="resetPassword()" [routerLink]="['/recuperar']">
+      Restablecer Contraseña
+    </ion-button>
+  </div>
