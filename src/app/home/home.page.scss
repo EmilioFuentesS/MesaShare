@@ -18,22 +18,8 @@
   opacity: 0; /* Inicialmente oculta la imagen */
 }
 
-/* Estilo del carrusel */
-ion-slides {
-  height: 150px; /* Ajusta la altura del carrusel si es necesario */
-  margin: 20px 0; /* Espacio arriba y abajo del carrusel */
-}
 
-.slide-text {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  font-size: 18px; /* Tamaño del texto */
-  font-weight: bold; /* Opcional: hace el texto más prominente */
-  text-align: center;
-  padding: 0 10px; /* Añade espacio horizontal alrededor del texto */
-}
+
 
 /* Contenedor de botones */
 .button-container {
