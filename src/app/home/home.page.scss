@@ -1,3 +1,7 @@
+Todas las paginas volver atrás y volver a home
+Comando para añadir el Android y ios
+
+
 /* Contenedor de la imagen */
 .image-container {
   display: flex;
@@ -18,6 +22,41 @@
   opacity: 0; /* Inicialmente oculta la imagen */
 }
 
+/* Estilo para el mensaje formal */
+.formal-message {
+  text-align: center;
+  font-size: 24px; /* Tamaño moderado del texto */
+  font-weight: 500; /* Texto semi-negrita para un toque profesional */
+  color: #333; /* Color de texto oscuro para una apariencia elegante */
+  margin: 20px; /* Espaciado igual en todos los lados */
+  padding: 15px; /* Relleno alrededor del texto */
+  background-color: #f4f4f4; /* Fondo suave y neutro */
+  border: 1px solid #ddd; /* Borde sutil para definir el área del mensaje */
+  border-radius: 8px; /* Bordes redondeados */
+}
+
+/* Estilo para texto en negrita dentro del mensaje */
+.formal-message strong {
+  color: #007bff; /* Color para resaltar el nombre de la aplicación */
+}
+
+/* Media queries para pantallas pequeñas */
+@media (max-width: 768px) {
+  .formal-message {
+    font-size: 20px; /* Tamaño de texto más pequeño en pantallas pequeñas */
+    padding: 12px; /* Menos relleno */
+    margin: 15px; /* Menor espaciado alrededor */
+  }
+}
+
+/* Media queries para pantallas muy pequeñas, como teléfonos móviles */
+@media (max-width: 480px) {
+  .formal-message {
+    font-size: 18px; /* Tamaño de texto aún más pequeño */
+    padding: 10px; /* Menos relleno */
+    margin: 10px; /* Menor espaciado alrededor */
+  }
+}
 
 
 
@@ -66,3 +105,7 @@ ion-button[color="secondary"] {
   font-weight: bold; /* Opcional: hace el texto más prominente */
   font-size: 16px; /* Tamaño del texto, ajusta según prefieras */
 }
+
+
+
+
