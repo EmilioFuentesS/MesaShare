@@ -40,8 +40,11 @@
      <ion-button class="login" expand="full" type="submit" [disabled]="!loginForm.valid" [routerLink]="['/inicio']">
   Ingresar
      </ion-button>
-    <!-- Botones con routerLink para navegación interna -->
-    <ion-button class="recuperar" expand="full" (click)="resetPassword()" [routerLink]="['/recuperar']">
-      Restablecer Contraseña
-    </ion-button>
+    <!-- Enlace subrayado con routerLink para navegación interna -->
+<ion-item class="link-item" [routerLink]="['/recuperar']" lines="none">
+  <ion-label class="link-text" (click)="resetPassword()">
+    Restablecer Contraseña
+  </ion-label>
+</ion-item>
+
   </div>
