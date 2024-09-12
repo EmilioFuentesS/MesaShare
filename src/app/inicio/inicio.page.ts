@@ -1,12 +1,13 @@
-import { Component, ViewChild } from '@angular/core';
-import { IonMenu, NavController } from '@ionic/angular';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { IonMenu } from '@ionic/angular';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-inicio',
   templateUrl: './inicio.page.html',
   styleUrls: ['./inicio.page.scss'],
 })
-export class InicioPage {
+export class InicioPage implements OnInit {
   @ViewChild(IonMenu) menu?: IonMenu;
 
   numPersonas: number = 0;
@@ -26,9 +27,19 @@ export class InicioPage {
   todosLosItems: any[] = [...this.menuItems];
   pedidos: { [key: string]: any[] } = {};
   personaSeleccionada: string | null = null;
+  username: string | null = null;
 
-  constructor(private navCtrl: NavController) {}
+  constructor(private router: Router) {}
 
+  ngOnInit() {
+    // Acceder al estado de navegación
+    const navigation = this.router.getCurrentNavigation();
+    if (navigation?.extras.state) {
+      this.username = (navigation.extras.state as { username?: string }).username || null;
+      console.log('Username received:', this.username);
+    }
+  }
+  
   ionViewWillEnter() {
     // Cierra el menú cuando entras a la página de inicio
     if (this.menu) {

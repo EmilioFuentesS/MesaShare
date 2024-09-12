@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>Dividir cuenta</ion-title>
-    
+    <ion-title></ion-title>
+    <ion-label *ngIf="username" class="welcome-label">Bienvenido {{ username }}</ion-label>
     <!-- Menú desplegable en la parte superior derecha -->
     <ion-buttons slot="end">
       <ion-menu-button></ion-menu-button>

@@ -1,23 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
 })
-export class LoginPage implements OnInit {
+export class LoginPage {
   loginForm: FormGroup;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private router: Router) {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', [Validators.required, this.passwordStrengthValidator]]
     });
-  }
-
-  ngOnInit() {
-    // No es necesario inicializar aquí ya que ya está hecho en el constructor
   }
 
   passwordStrengthValidator(control: AbstractControl): { [key: string]: boolean } | null {
@@ -30,9 +27,8 @@ export class LoginPage implements OnInit {
 
   onLogin() {
     if (this.loginForm.valid) {
-      console.log('Formulario válido', this.loginForm.value);
-    } else {
-      console.log('Formulario inválido');
+      const { username } = this.loginForm.value;
+      this.router.navigate(['/inicio'], { state: { username } });
     }
   }
 
