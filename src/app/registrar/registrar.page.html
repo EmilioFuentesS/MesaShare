@@ -1,6 +1,13 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>Registro</ion-title>
+
+    <!-- Botón de volver con flecha hacia atrás -->
+    <ion-buttons slot="end">
+      <ion-button [routerLink]="['/home']">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -64,7 +71,7 @@
     </div>
 
     <!-- Botón de Enviar -->
-    <ion-button expand="full" type="submit" [disabled]="!registrarForm.valid" [routerLink]="['/login']">
+    <ion-button expand="full" type="submit" [disabled]="!registrarForm.valid">
       Registrar
     </ion-button>
   </form>

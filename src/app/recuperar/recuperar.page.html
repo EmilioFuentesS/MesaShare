@@ -1,6 +1,13 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>Recuperar Contraseña</ion-title>
+
+    <!-- Botón de volver con flecha hacia atrás -->
+    <ion-buttons slot="end">
+      <ion-button [routerLink]="['/login']">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 

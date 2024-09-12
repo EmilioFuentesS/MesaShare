@@ -1,12 +1,20 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>Inicio de Sesión</ion-title>
+
+    <!-- Botón de volver con flecha hacia atrás -->
+    <ion-buttons slot="end">
+      <ion-button [routerLink]="['/home']">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="login-form">
     
+    <!-- Campo de Usuario -->
     <ion-item>
       <ion-label position="floating">Usuario<span class="required">*</span></ion-label>
       <ion-input formControlName="username"></ion-input>
@@ -17,6 +25,7 @@
       </div>
     </div>
 
+    <!-- Campo de Contraseña -->
     <ion-item>
       <ion-label position="floating">Contraseña<span class="required">*</span></ion-label>
       <ion-input type="password" formControlName="password"></ion-input>
@@ -32,19 +41,19 @@
       </ul>
     </div>
 
+    <!-- Contenedor para los botones debajo -->
+    <div class="button-container">
+      <!-- Botón de Ingresar -->
+      <ion-button class="login" expand="full" type="submit" [disabled]="!loginForm.valid" [routerLink]="['/inicio']">
+        Ingresar
+      </ion-button>
 
-
-  <!-- Contenedor para los botones debajo -->
-  <div class="button-container">
-     <!-- Botón de Ingresar -->
-     <ion-button class="login" expand="full" type="submit" [disabled]="!loginForm.valid" [routerLink]="['/inicio']">
-  Ingresar
-     </ion-button>
-    <!-- Enlace subrayado con routerLink para navegación interna -->
-<ion-item class="link-item" [routerLink]="['/recuperar']" lines="none">
-  <ion-label class="link-text" (click)="resetPassword()">
-    Restablecer Contraseña
-  </ion-label>
-</ion-item>
-
-  </div>
+      <!-- Enlace subrayado para restablecer contraseña -->
+      <ion-item class="link-item" [routerLink]="['/recuperar']" lines="none">
+        <ion-label class="link-text">
+          Restablecer Contraseña
+        </ion-label>
+      </ion-item>
+    </div>
+  </form>
+</ion-content>
