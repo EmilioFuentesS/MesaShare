@@ -1,24 +1,5 @@
-/* Estilos para mejorar la responsividad en pantallas pequeñas */
-@media (max-width: 768px) {
-    .login-form {
-      padding: 20px;
-      width: 90%;
-      gap: 15px;
-    }
-  
-    .button-container {
-      padding: 10px;
-      bottom: 10px;
-    }
-  
-    ion-button {
-      --font-size: 14px;
-      --height: 45px;
-    }
-  }
-  
   /* Estilos para mejorar la alineación del formulario */
-  ion-content {
+ion-content {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -49,19 +30,9 @@
   }
   
   
-  /* Estilo para el botón de ingresar */
-ion-button .login {
-    --background: #4CAF50; /* Color de fondo */
-    --color: white; /* Color del texto */
-    --border-radius: 8px; /* Bordes redondeados */
-    --padding: 12px 16px; /* Espaciado interno */
-    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra */
-    font-size: 16px; /* Tamaño de la fuente */
-    font-weight: bold; /* Negrita */
-  }
-  
+
   /* Estilo para el botón de restablecer contraseña */
-ion-button .recuperar {
+ion-button.recuperar {
     --background: #f33a21; /* Color de fondo */
     --color: white; /* Color del texto */
     --border-radius: 8px; /* Bordes redondeados */
@@ -69,6 +40,22 @@ ion-button .recuperar {
     --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra */
     font-size: 16px; /* Tamaño de la fuente */
     font-weight: bold; /* Negrita */
+    --padding-start: 8px;  /* Reduce el padding para hacerlo más cuadrado */
+    --padding-end: 8px;
+    --min-width: 40px;     /* Ancho mínimo */
+    --min-height: 40px;    /* Alto mínimo */
+  }
+
+
+  
+  ion-button.login {
+    --background: #4caf50;   /* Verde claro */
+    --color: white;          /* Texto en blanco */
+    --border-radius: 8px;    /* Bordes redondeados */
+    --padding-start: 8px;  /* Reduce el padding para hacerlo más cuadrado */
+    --padding-end: 8px;
+    --min-width: 40px;     /* Ancho mínimo */
+    --min-height: 40px;    /* Alto mínimo */
   }
   
   /* Estilo para el botón deshabilitado */
@@ -96,3 +83,16 @@ ion-button .recuperar {
     margin-left: 5px;
     vertical-align: middle;
 }
+
+/* Estilos para el enlace subrayado */
+.link-item {
+    --background: transparent; /* Sin fondo para el ítem */
+  }
+  
+  .link-text {
+    color: #007bff; /* Color del texto del enlace */
+    text-decoration: underline; /* Subrayado del texto */
+    font-weight: bold; /* Negrita opcional para el texto */
+    cursor: pointer; /* Cursor de mano para el enlace */
+  }
+  
