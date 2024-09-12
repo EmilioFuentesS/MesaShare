@@ -18,18 +18,19 @@
   opacity: 0; /* Inicialmente oculta la imagen */
 }
 
-/* Estilo para el mensaje formal */
 .formal-message {
-  text-align: center;
+  text-align: center; /* Centra el texto dentro del elemento */
   font-size: 24px; /* Tamaño moderado del texto */
   font-weight: 500; /* Texto semi-negrita para un toque profesional */
   color: #333; /* Color de texto oscuro para una apariencia elegante */
-  margin: 20px; /* Espaciado igual en todos los lados */
+  margin: 20px auto; /* Margen superior e inferior, centrado horizontalmente */
   padding: 15px; /* Relleno alrededor del texto */
   background-color: #f4f4f4; /* Fondo suave y neutro */
   border: 1px solid #ddd; /* Borde sutil para definir el área del mensaje */
   border-radius: 8px; /* Bordes redondeados */
+  max-width: 600px; /* Ancho máximo para evitar que el mensaje se estire demasiado */
 }
+
 
 /* Estilo para texto en negrita dentro del mensaje */
 .formal-message strong {
