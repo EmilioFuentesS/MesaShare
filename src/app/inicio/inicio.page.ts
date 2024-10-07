@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { IonMenu } from '@ionic/angular';
 import { Router } from '@angular/router';
+import { MesaAPIService } from '../MesaAPI/mesa-api.service'; // Asegúrate de usar la ruta correcta
 
 @Component({
   selector: 'app-inicio',
@@ -12,24 +13,13 @@ export class InicioPage implements OnInit {
 
   numPersonas: number = 0;
   personas: string[] = [];
-  menuItems = [
-    { nombre: 'Pizza', precio: 15000 },
-    { nombre: 'Pasta', precio: 12000 },
-    { nombre: 'Ensalada', precio: 7000 },
-    { nombre: 'Hamburguesa', precio: 9000 },
-    { nombre: 'Tacos', precio: 8500 },
-    { nombre: 'Sushi', precio: 18000 },
-    { nombre: 'Ramen', precio: 13000 },
-    { nombre: 'Empanadas', precio: 5000 },
-    { nombre: 'Sandwich', precio: 6000 },
-    { nombre: 'Helado', precio: 4000 }
-  ];
-  todosLosItems: any[] = [...this.menuItems];
+  menuItems: any[] = [];
+  todosLosItems: any[] = [];
   pedidos: { [key: string]: any[] } = {};
   personaSeleccionada: string | null = null;
   username: string | null = null;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private mesaAPIService: MesaAPIService) {}
 
   ngOnInit() {
     // Acceder al estado de navegación
@@ -38,8 +28,14 @@ export class InicioPage implements OnInit {
       this.username = (navigation.extras.state as { username?: string }).username || null;
       console.log('Username received:', this.username);
     }
+
+    // Cargar los items del menú desde el servicio MesaAPI
+    this.mesaAPIService.getMenuItems().subscribe((data) => {
+      this.menuItems = data;
+      this.todosLosItems = [...data];
+    });
   }
-  
+
   ionViewWillEnter() {
     // Cierra el menú cuando entras a la página de inicio
     if (this.menu) {
@@ -84,14 +80,14 @@ export class InicioPage implements OnInit {
         this.pedidos[this.personaSeleccionada] = [];
       }
       this.pedidos[this.personaSeleccionada].push(item);
-      this.menuItems = this.menuItems.filter(menuItem => menuItem.nombre !== item.nombre);
+      this.menuItems = this.menuItems.filter((menuItem) => menuItem.nombre !== item.nombre);
     }
   }
 
   vaciarPedido(persona: string) {
     if (this.pedidos[persona]) {
-      this.pedidos[persona].forEach(item => {
-        if (!this.menuItems.some(menuItem => menuItem.nombre === item.nombre)) {
+      this.pedidos[persona].forEach((item) => {
+        if (!this.menuItems.some((menuItem) => menuItem.nombre === item.nombre)) {
           this.menuItems.push(item);
         }
       });
