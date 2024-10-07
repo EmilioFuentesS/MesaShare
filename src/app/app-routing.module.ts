@@ -14,7 +14,8 @@ const routes: Routes = [
   {
     path: 'login',
     loadChildren: () => import('./login/login.module').then( m => m.LoginPageModule)
-  },  {
+  },
+  {
     path: 'registrar',
     loadChildren: () => import('./registrar/registrar.module').then( m => m.RegistrarPageModule)
   },
@@ -25,6 +26,26 @@ const routes: Routes = [
   {
     path: 'inicio',
     loadChildren: () => import('./inicio/inicio.module').then( m => m.InicioPageModule)
+  },
+  {
+    path: 'menu-add',
+    loadChildren: () => import('./MesaAPI/menu-add/menu-add.module').then( m => m.MenuAddPageModule)
+  },
+  {
+    path: 'menu-edit',
+    loadChildren: () => import('./MesaAPI/menu-edit/menu-edit.module').then( m => m.MenuEditPageModule)
+  },
+  {
+    path: 'menu-delete',
+    loadChildren: () => import('./MesaAPI/menu-delete/menu-delete.module').then( m => m.MenuDeletePageModule)
+  },
+  {
+    path: 'generarqr',
+    loadChildren: () => import('./generarqr/generarqr.module').then( m => m.GenerarqrPageModule)
+  },
+  {
+    path: 'admin',
+    loadChildren: () => import('./admin/admin.module').then( m => m.AdminPageModule)
   },
 
 ];

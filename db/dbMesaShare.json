@@ -1,0 +1,18 @@
+{
+  "productos": [
+    {
+      "id": 1,
+      "nombre": "Papas fritas con Lomo Vetado",
+      "precio": 8000,
+      "cantidad": 1,
+      "fecha": "2024-10-07T21:23:27.927Z"
+    },
+    {
+      "id": 2,
+      "nombre": "Arroz Chaufa con Pollo Grillado",
+      "precio": 8500,
+      "cantidad": 1,
+      "fecha": "2024-10-07T21:23:50.709Z"
+    }
+  ]
+}

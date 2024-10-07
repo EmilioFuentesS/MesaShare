@@ -1,0 +1,29 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title> Nuevo Producto </ion-title>
+    <ion-buttons slot="end">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <form [formGroup]="menuForm" (ngSubmit)="onFormSubmit(menuForm.value)">
+    <ion-item>
+      <ion-label position="floating">Nombre</ion-label>
+      <ion-input type="text" formControlName="prod_name"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Precio</ion-label>
+      <ion-input type="number" formControlName="prod_price"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Cantidad</ion-label>
+      <ion-input type="number" formControlName="prod_cantidad"></ion-input>
+    </ion-item>
+    <ion-button type="submit" shape="round" color="primary" expand="block" [disabled]="!menuForm.valid">Submit</ion-button>
+  </form>
+</ion-content>
