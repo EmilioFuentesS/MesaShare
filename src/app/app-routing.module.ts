@@ -40,13 +40,14 @@ const routes: Routes = [
     loadChildren: () => import('./MesaAPI/menu-delete/menu-delete.module').then( m => m.MenuDeletePageModule)
   },
   {
-    path: 'generarqr',
-    loadChildren: () => import('./generarqr/generarqr.module').then( m => m.GenerarqrPageModule)
-  },
-  {
     path: 'admin',
     loadChildren: () => import('./admin/admin.module').then( m => m.AdminPageModule)
   },
+  {
+    path: 'face-id',
+    loadChildren: () => import('./face-id/face-id.module').then( m => m.FaceIDPageModule)
+  },
+
 
 ];
 

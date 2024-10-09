@@ -3,6 +3,14 @@
     <ion-title>
       MesaShare
     </ion-title>
+
+    <!-- Icono de admin en la parte superior derecha -->
+    <ion-buttons slot="end">
+      <ion-button [routerLink]="['/face-id']">
+        <ion-icon name="person-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
   </ion-toolbar>
 </ion-header>
 
@@ -18,7 +26,7 @@
     <img #animatedImage class="animated-image" src="assets/imgs/logo.png" alt="LogoMesaShare" />
   </div>
 
-      <!-- Mensaje formal -->
+  <!-- Mensaje formal -->
   <div class="formal-message">
     Simplifica la gestión de tus gastos con <strong>MesaShare</strong>
   </div>

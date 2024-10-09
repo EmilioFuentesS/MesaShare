@@ -1,12 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { GenerarqrPage } from './generarqr.page';
+import { FaceID } from './face-id.page';
 
-describe('GenerarqrPage', () => {
-  let component: GenerarqrPage;
-  let fixture: ComponentFixture<GenerarqrPage>;
+describe('FaceIDPage', () => {
+  let component: FaceID;
+  let fixture: ComponentFixture<FaceID>;
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(GenerarqrPage);
+    fixture = TestBed.createComponent(FaceID);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

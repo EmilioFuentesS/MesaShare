@@ -1,0 +1,17 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      Autenticación de Credencial
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-item>
+    <!-- Botón para capturar imagen y hacer reconocimiento facial -->
+    <ion-button class="face-id-button" expand="full" (click)="captureAndCompare()">
+      <ion-icon name="camera-outline" slot="start"></ion-icon>
+      Reconocimiento de Credencial
+    </ion-button>
+  </ion-item>
+</ion-content>

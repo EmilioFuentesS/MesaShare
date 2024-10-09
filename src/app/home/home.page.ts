@@ -1,5 +1,6 @@
 import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { AnimationController } from '@ionic/angular';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 @Component({
   selector: 'app-home',
@@ -28,6 +29,4 @@ export class HomePage implements AfterViewInit {
     imageAnimation.play();
   }
   
-  
-  
-}
+} 
