@@ -1,0 +1,54 @@
+.personas-container {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.contador-personas {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.numero-personas {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0 10px;
+}
+
+ion-button {
+    --border-radius: 8px;  /* Bordes redondeados */
+    --padding-start: 8px;  /* Reduce el padding para hacerlo más cuadrado */
+    --padding-end: 8px;
+    --min-width: 40px;     /* Ancho mínimo */
+    --min-height: 40px;    /* Alto mínimo */
+}
+
+ion-button.vaciar-pedido {
+    --background: #4caf50;   /* Verde claro */
+    --color: white;          /* Texto en blanco */
+    --border-radius: 8px;    /* Bordes redondeados */
+}
+
+.home-button {
+    --background: transparent; /* Sin fondo */
+    --border: none; /* Sin borde */
+    --color: var(--ion-text-color); /* Color del texto según el tema */
+    --padding: 0; /* Sin padding */
+    --border-radius: 0; /* Sin bordes redondeados */
+    --box-shadow: none; /* Sin sombra */
+    text-align: left; /* Alinear texto a la izquierda */
+}
+
+.welcome-label {
+    font-size: 16px;
+    font-weight: bold;
+    margin-left: 16px;
+    color: #000;
+}
+
+.user-icon {
+    width: 20px; /* Tamaño del icono */
+    height: 30px; /* Tamaño del icono */
+    margin-right: 8px; /* Espacio entre el icono y el texto */
+}

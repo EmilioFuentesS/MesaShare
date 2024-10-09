@@ -1,13 +1,63 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>Admin</ion-title>
+    <ion-title>Productos Administrador</ion-title>
+    <ion-label *ngIf="username" class="welcome-label">
+      <img src="/assets/imgs/usuario.png" alt="User Icon" class="user-icon">
+      Bienvenido {{ username }}
+    </ion-label>
+    <ion-buttons slot="end">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
+<ion-menu side="end" contentId="main-content">
+  <ion-header>
     <ion-toolbar>
-      <ion-title size="large">Admin</ion-title>
+      <ion-title>Menú</ion-title>
     </ion-toolbar>
   </ion-header>
+  <ion-content>
+    <ion-list>
+      <ion-item>
+        <ion-button class="home-button" expand="full" routerLink="/home">
+          <ion-icon name="home-outline" slot="start"></ion-icon>
+          Home
+        </ion-button>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-menu>
+
+<ion-content [fullscreen]="true" id="main-content">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Lista de Productos</ion-title>
+      <ion-buttons slot="end">
+        <ion-button (click)="cargarProductos()" color="primary">
+          Listar Productos
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <!-- Botón para listar productos justo debajo del encabezado -->
+  <ion-button expand="full" (click)="cargarProductos()" color="primary" class="listar-button">
+    Listar Productos
+  </ion-button>
+
+  <!-- Lista de productos agregados -->
+  <ion-list *ngIf="productos.length > 0">
+    <ion-card *ngFor="let producto of productos">
+      <ion-card-header>
+        {{ producto.nombre }}
+      </ion-card-header>
+      <ion-card-content>
+        <ion-label>Precio: ${{ producto.precio }}</ion-label>
+        <ion-button expand="full" color="danger" (click)="onEliminarProducto(producto.id)">Eliminar</ion-button>
+      </ion-card-content>
+    </ion-card>
+  </ion-list>
+  
+  <ion-button expand="full" routerLink="/menu-add">Agregar Producto</ion-button>
 </ion-content>
