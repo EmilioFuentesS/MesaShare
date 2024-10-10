@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { MesaAPIService, ClMenuItem } from '../MesaAPI/mesa-api.service'; // Asegúrate de usar la ruta correcta
+import { MesaAPIService } from '../MesaAPI/mesa-api.service'; // Servicio para API
+import { ClProducto } from '../MesaAPI/model/ClProducto'; // Modelo de producto
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera'; // Importar Cámara
 
 @Component({
@@ -9,7 +10,7 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera'; // I
   styleUrls: ['./admin.page.scss'],
 })
 export class AdminPage implements OnInit {
-  productos: ClMenuItem[] = []; // Lista de productos
+  productos: ClProducto[] = []; // Lista de productos usando ClProducto
   username: string | null = null;
   capturedImage: string = '';  // Variable para la imagen capturada
 
@@ -21,7 +22,7 @@ export class AdminPage implements OnInit {
   }
 
   cargarProductos() {
-    this.mesaAPIService.getMenuItems().subscribe((data: ClMenuItem[]) => {
+    this.mesaAPIService.getMenuItems().subscribe((data: ClProducto[]) => { // Cambiado a ClProducto[]
       this.productos = data; // Asignar los productos a la variable
     }, error => {
       console.error('Error al cargar productos:', error);
@@ -42,4 +43,14 @@ export class AdminPage implements OnInit {
     });
   }
 
+  // Método para capturar una imagen usando la cámara
+  async captureImage() {
+    const image = await Camera.getPhoto({
+      quality: 90,
+      allowEditing: false,
+      resultType: CameraResultType.Base64,
+      source: CameraSource.Camera
+    });
+    this.capturedImage = `data:image/jpeg;base64,${image.base64String}`;
+  }
 }

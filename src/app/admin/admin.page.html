@@ -29,7 +29,6 @@
   </ion-content>
 </ion-menu>
 
-
 <ion-content [fullscreen]="true" id="main-content">
   <ion-header collapse="condense">
     <ion-toolbar>
@@ -55,7 +54,15 @@
       </ion-card-header>
       <ion-card-content>
         <ion-label>Precio: ${{ producto.precio }}</ion-label>
-        <ion-button expand="full" color="danger" (click)="onEliminarProducto(producto.id)">Eliminar</ion-button>
+        
+        <!-- Botones de Editar y Eliminar -->
+        <ion-button expand="full" color="secondary" [routerLink]="['/menu-edit', producto.id]">
+          Editar
+        </ion-button>
+        
+        <ion-button expand="full" color="danger" (click)="onEliminarProducto(producto.id)">
+          Eliminar
+        </ion-button>
       </ion-card-content>
     </ion-card>
   </ion-list>

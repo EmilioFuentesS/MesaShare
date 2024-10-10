@@ -32,7 +32,7 @@ const routes: Routes = [
     loadChildren: () => import('./MesaAPI/menu-add/menu-add.module').then( m => m.MenuAddPageModule)
   },
   {
-    path: 'menu-edit',
+    path: 'menu-edit/:id',  // Cambiado para incluir el parámetro 'id'
     loadChildren: () => import('./MesaAPI/menu-edit/menu-edit.module').then( m => m.MenuEditPageModule)
   },
   {
@@ -46,9 +46,7 @@ const routes: Routes = [
   {
     path: 'face-id',
     loadChildren: () => import('./face-id/face-id.module').then( m => m.FaceIDPageModule)
-  },
-
-
+  }
 ];
 
 @NgModule({
