@@ -1,16 +1,19 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>Productos Administrador</ion-title>
+    <ion-title>Administración</ion-title>
+    <!-- Mostrar el nombre de usuario si está disponible -->
     <ion-label *ngIf="username" class="welcome-label">
       <img src="/assets/imgs/usuario.png" alt="User Icon" class="user-icon">
-      Bienvenido {{ username }}
+      Bienvenido, {{ username }}
     </ion-label>
+    <!-- Menú desplegable en la parte superior derecha -->
     <ion-buttons slot="end">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
+<!-- Menú lateral -->
 <ion-menu side="end" contentId="main-content">
   <ion-header>
     <ion-toolbar>
@@ -19,18 +22,28 @@
   </ion-header>
   <ion-content>
     <ion-list>
-      <ion-item>
-        <ion-button class="home-button" expand="full" routerLink="/home">
-          <ion-icon name="home-outline" slot="start"></ion-icon>
-          Home
-        </ion-button>
+      <ion-item routerLink="/home">
+        <ion-icon name="home-outline" slot="start"></ion-icon>
+        <ion-label>Home</ion-label>
+      </ion-item>
+
+      <ion-item routerLink="/meseros">
+        <ion-label>Meseros</ion-label>
+      </ion-item>
+
+      <ion-item routerLink="/qr-generator">
+        <ion-label>Generar QR</ion-label>
+      </ion-item>
+
+      <ion-item routerLink="/credencial-admin">
+        <ion-label>Escanear QR</ion-label>
       </ion-item>
     </ion-list>
   </ion-content>
 </ion-menu>
 
-
-<ion-content [fullscreen]="true" id="main-content">
+<!-- Contenido principal -->
+<ion-content [fullscreen]="true" id="main-content" class="ion-padding">
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large">Lista de Productos</ion-title>
@@ -42,23 +55,61 @@
     </ion-toolbar>
   </ion-header>
 
-  <!-- Botón para listar productos justo debajo del encabezado -->
+  <!-- Botón para listar productos -->
   <ion-button expand="full" (click)="cargarProductos()" color="primary" class="listar-button">
     Listar Productos
   </ion-button>
 
-  <!-- Lista de productos agregados -->
+  <!-- Formulario de edición de productos -->
+  <ion-card *ngIf="productoSeleccionado">
+    <ion-card-header>
+      Editar Producto
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-label position="floating">Nombre</ion-label>
+        <ion-input [(ngModel)]="productoSeleccionado.nombre"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Precio</ion-label>
+        <ion-input type="number" [(ngModel)]="productoSeleccionado.precio"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Cantidad</ion-label>
+        <ion-input type="number" [(ngModel)]="productoSeleccionado.cantidad"></ion-input>
+      </ion-item>
+
+      <ion-button expand="full" (click)="editarProducto()">Guardar Cambios</ion-button>
+      <ion-button expand="full" color="danger" (click)="productoSeleccionado = null">Cancelar</ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Lista de productos -->
   <ion-list *ngIf="productos.length > 0">
-    <ion-card *ngFor="let producto of productos">
+    <ion-card *ngFor="let producto of productos" class="producto-card">
       <ion-card-header>
-        {{ producto.nombre }}
+        <ion-card-title>{{ producto.nombre }}</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <ion-label>Precio: ${{ producto.precio }}</ion-label>
-        <ion-button expand="full" color="danger" (click)="onEliminarProducto(producto.id)">Eliminar</ion-button>
+        <p>Precio: ${{ producto.precio }}</p>
+        <p>Cantidad: {{ producto.cantidad }}</p>
+        <div class="botones-acciones">
+          <!-- Botón para editar producto -->
+          <ion-button color="tertiary" fill="outline" (click)="onEditarProducto(producto)">
+            <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+
+          <!-- Botón para eliminar producto -->
+          <ion-button color="danger" fill="outline" (click)="onEliminarProducto(producto.id)">
+            <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </div>
       </ion-card-content>
     </ion-card>
   </ion-list>
-  
-  <ion-button expand="full" routerLink="/menu-add">Agregar Producto</ion-button>
+
+  <!-- Botón para agregar productos -->
+  <ion-button expand="full" routerLink="/menu-add" color="secondary">
+    Agregar Producto
+  </ion-button>
 </ion-content>

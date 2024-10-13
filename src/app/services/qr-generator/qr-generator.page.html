@@ -1,0 +1,45 @@
+<ion-header> 
+  <ion-toolbar>
+    <!-- Botón de retroceso -->
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+
+    <ion-title>Generar QR Mesero</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- Campo Nombre del mesero -->
+  <ion-item>
+    <ion-label position="floating">Nombre del mesero</ion-label>
+    <ion-input [(ngModel)]="meseroNombre" placeholder="Ingresa el nombre del mesero"></ion-input>
+  </ion-item>
+
+  <!-- Campo Texto para el código QR -->
+  <ion-item>
+    <ion-label position="floating">Texto para el código QR</ion-label>
+    <ion-input [(ngModel)]="qrCodeText" placeholder="Ingresa el texto aquí"></ion-input>
+  </ion-item>
+
+  <!-- Botón para generar el código QR -->
+  <ion-button expand="block" (click)="generateQRCode()" color="primary" class="button-generar-qr">
+    Generar y Guardar QR
+  </ion-button>
+
+  <!-- Mostrar el código QR generado si existe -->
+  <div *ngIf="qrCodeImage" class="qr-container">
+    <h2>Código QR Generado:</h2>
+    <img [src]="qrCodeImage" alt="Código QR" class="qr-image">
+    
+    <!-- Botón para descargar el QR -->
+    <ion-button expand="block" color="secondary" (click)="downloadQRCode()">
+      Descargar QR
+    </ion-button>
+  </div>
+
+  <!-- Botón para volver a la lista de meseros -->
+  <ion-button expand="block" color="medium" routerLink="/meseros" class="button-volver">
+    Volver a Meseros
+  </ion-button>
+</ion-content>

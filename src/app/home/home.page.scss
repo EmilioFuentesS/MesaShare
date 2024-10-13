@@ -104,5 +104,25 @@ ion-button[color="secondary"] {
 }
 
 
+.staff-button {
+  font-size: 16px;
+  padding: 10px 20px;
+  border-radius: 25px;
+  color: white;
+  background-color: #1976d2;
+  text-transform: uppercase;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+
+
+
+  &:hover {
+    background-color: #1565c0;
+    transform: scale(1.05);
+  }
+
+  &:active {
+    background-color: #0d47a1;
+  }
+}
 
 

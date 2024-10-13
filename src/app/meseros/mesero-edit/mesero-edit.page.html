@@ -1,0 +1,50 @@
+<ion-header> 
+  <ion-toolbar>
+    <!-- Botón de retroceso -->
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+
+    <ion-title>Editar Mesero</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form *ngIf="mesero" (ngSubmit)="onSubmit()">
+    <ion-list>
+      <!-- Campo Nombre -->
+      <ion-item>
+        <ion-label position="floating">Nombre</ion-label>
+        <ion-input [(ngModel)]="mesero.nombre" name="nombre" required></ion-input>
+      </ion-item>
+
+      <!-- Campo Código QR -->
+      <ion-item>
+        <ion-label position="floating">Código QR</ion-label>
+        <ion-input [(ngModel)]="mesero.qrCode" name="qrCode" required></ion-input>
+      </ion-item>
+
+      <!-- Campo Texto asociado al QR -->
+      <ion-item>
+        <ion-label position="floating">Texto asociado al QR</ion-label>
+        <ion-input [(ngModel)]="mesero.texto" name="texto" required></ion-input>
+      </ion-item>
+
+      <!-- Campo Fecha de registro -->
+      <ion-item>
+        <ion-label position="floating">Fecha de registro</ion-label>
+        <ion-datetime [(ngModel)]="mesero.fecha" name="fecha"></ion-datetime>
+      </ion-item>
+    </ion-list>
+
+    <!-- Botones de acción -->
+    <div class="button-group">
+      <ion-button expand="block" color="primary" type="submit">
+        Guardar Cambios
+      </ion-button>
+      <ion-button expand="block" color="light" (click)="cancel()">
+        Cancelar
+      </ion-button>
+    </div>
+  </form>
+</ion-content>

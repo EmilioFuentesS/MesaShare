@@ -1,7 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { IonMenu } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { MesaAPIService } from '../MesaAPI/mesa-api.service'; // Asegúrate de usar la ruta correcta
+import { MesaAPIService } from '../services/MesaAPI/mesa-api.service'; // Asegúrate de usar la ruta correcta
+import { SQLiteService } from '../services/sqlite/sqlite.service';
 
 @Component({
   selector: 'app-inicio',
@@ -17,12 +18,13 @@ export class InicioPage implements OnInit {
   todosLosItems: any[] = [];
   pedidos: { [key: string]: any[] } = {};
   personaSeleccionada: string | null = null;
-  username: string | null = null;
+  username: string | null = null; // Nombre de usuario del que inició sesión
 
-  constructor(private router: Router, private mesaAPIService: MesaAPIService) {}
+  constructor(private router: Router, private mesaAPIService: MesaAPIService, private sqliteService: SQLiteService) {}
 
   ngOnInit() {
-    // Acceder al estado de navegación
+    
+    // Acceder al estado de navegación para obtener el nombre de usuario
     const navigation = this.router.getCurrentNavigation();
     if (navigation?.extras.state) {
       this.username = (navigation.extras.state as { username?: string }).username || null;

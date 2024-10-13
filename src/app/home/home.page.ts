@@ -1,6 +1,7 @@
 import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { AnimationController } from '@ionic/angular';
-import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { SQLiteService } from '../services/sqlite/sqlite.service';
+
 
 @Component({
   selector: 'app-home',
@@ -12,10 +13,12 @@ export class HomePage implements AfterViewInit {
 /*ANIMACION */ 
   @ViewChild('animatedImage', { read: ElementRef, static: true }) animatedImage!: ElementRef;
 
-  constructor(private animationCtrl: AnimationController) {}
+  constructor(private animationCtrl: AnimationController,private sqliteService: SQLiteService ) {}
 
+ 
   ngAfterViewInit() {
     this.playAnimation();
+    
   }
 
   playAnimation() {

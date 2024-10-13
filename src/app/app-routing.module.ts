@@ -29,25 +29,36 @@ const routes: Routes = [
   },
   {
     path: 'menu-add',
-    loadChildren: () => import('./MesaAPI/menu-add/menu-add.module').then( m => m.MenuAddPageModule)
+    loadChildren: () => import('./services/MesaAPI/menu-add/menu-add.module').then( m => m.MenuAddPageModule)
   },
-  {
-    path: 'menu-edit',
-    loadChildren: () => import('./MesaAPI/menu-edit/menu-edit.module').then( m => m.MenuEditPageModule)
-  },
-  {
-    path: 'menu-delete',
-    loadChildren: () => import('./MesaAPI/menu-delete/menu-delete.module').then( m => m.MenuDeletePageModule)
-  },
+ 
   {
     path: 'admin',
     loadChildren: () => import('./admin/admin.module').then( m => m.AdminPageModule)
   },
   {
-    path: 'face-id',
-    loadChildren: () => import('./face-id/face-id.module').then( m => m.FaceIDPageModule)
+    path: 'credencial-admin',
+    loadChildren: () => import('./credencial-admin/credencial-admin.module').then( m => m.CredencialAdminPageModule)
   },
+  {
+    path: 'qr-generator',
+    loadChildren: () => import('./services/qr-generator/qr-generator.module').then( m => m.QrGeneratorPageModule)
+  },
+  {
+    path: 'meseros',
+    loadChildren: () => import('./meseros/meseros.module').then( m => m.MeserosPageModule)
+  },
+  {
+    path: 'mesero-edit',
+    loadChildren: () => import('./meseros/mesero-edit/mesero-edit.module').then( m => m.MeseroEditPageModule)
+  },
+  {
+    path: 'mesero-edit/:id', // Asegúrate de que el segmento ':id' está presente para capturar el parámetro del ID
+    loadChildren: () => import('./meseros/mesero-edit/mesero-edit.module').then(m => m.MeseroEditPageModule)
+  }
+  
 
+ 
 
 ];
 

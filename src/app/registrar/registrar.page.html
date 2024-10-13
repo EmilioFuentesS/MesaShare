@@ -12,7 +12,7 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <form [formGroup]="registrarForm" (ngSubmit)="onSubmit()" class="register-form">
+  <form [formGroup]="registrarForm" (ngSubmit)="registrarUsuario()" class="register-form">
     <!-- Campo de Usuario -->
     <ion-item>
       <ion-label position="floating">Usuario<span class="required">*</span></ion-label>
@@ -70,9 +70,9 @@
       </div>
     </div>
 
-    <!-- Botón de Enviar -->
-    <ion-button expand="full" routerLink="/login" type="submit" [disabled]="!registrarForm.valid">
+    <ion-button expand="full" type="submit" [disabled]="!registrarForm.valid">
       Registrar
     </ion-button>
+    
   </form>
 </ion-content>

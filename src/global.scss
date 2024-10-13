@@ -35,3 +35,31 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import "@ionic/angular/css/palettes/dark.system.css";
+
+body.scanner-active {
+    --background: transparent;
+    --ion-background-color: transparent;
+    background-color: transparent !important;
+  }
+  
+  .qr-scanner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    pointer-events: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .qr-scanner-box {
+    border: 4px solid #00FF00; /* Color del borde verde para el área de escaneo */
+    width: 250px;
+    height: 250px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.6);
+  }
+  

@@ -52,3 +52,62 @@ ion-button.vaciar-pedido {
     height: 30px; /* Tamaño del icono */
     margin-right: 8px; /* Espacio entre el icono y el texto */
 }
+
+.sidenav-container {
+    height: 100%;
+  }
+  
+  .mat-sidenav {
+    width: 250px;
+  }
+  
+  .mat-sidenav-content {
+    padding: 20px;
+  }
+  
+  .welcome-label {
+    display: flex;
+    align-items: center;
+    font-size: 1.2rem;
+    margin-left: 10px;
+  }
+  
+  .user-icon {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+  }
+  
+  ion-content {
+    .producto-card {
+      margin: 15px 0;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+  
+    .botones-acciones {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px; /* Espacio entre los botones */
+    }
+  
+    ion-button {
+      --border-radius: 12px;
+    }
+  
+    ion-card-title {
+      font-size: 18px;
+      font-weight: bold;
+    }
+  
+    ion-card-content {
+      font-size: 14px;
+      color: #666;
+    }
+  
+    ion-button.listar-button {
+      margin-bottom: 20px;
+    }
+  }
+  

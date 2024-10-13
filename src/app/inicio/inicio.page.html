@@ -1,9 +1,10 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title></ion-title>
+    <ion-title>Inicio</ion-title>
+    <!-- Mostrar el nombre de usuario si está disponible -->
     <ion-label *ngIf="username" class="welcome-label">
       <img src="/assets/imgs/usuario.png" alt="User Icon" class="user-icon">
-      Bienvenido {{ username }}
+      Bienvenido, {{ username }}
     </ion-label>
     <!-- Menú desplegable en la parte superior derecha -->
     <ion-buttons slot="end">
@@ -12,6 +13,7 @@
   </ion-toolbar>
 </ion-header>
 
+<!-- Menú lateral -->
 <ion-menu side="end" contentId="main-content">
   <ion-header>
     <ion-toolbar>
@@ -20,16 +22,18 @@
   </ion-header>
   <ion-content>
     <ion-list>
+      <!-- Opción de navegación a Home -->
       <ion-item>
         <ion-button class="home-button" expand="full" routerLink="/home">
           <ion-icon name="home-outline" slot="start"></ion-icon>
           Home
         </ion-button>
       </ion-item>
+      <!-- Opción de navegación a Admin -->
       <ion-item>
         <ion-button class="home-button" expand="full" routerLink="/admin">
           <ion-icon name="home-outline" slot="start"></ion-icon>
-          Home
+          Admin
         </ion-button>
       </ion-item>
     </ion-list>
@@ -44,7 +48,7 @@
   </ion-header>
 
   <!-- Selección de número de personas con botones + y - -->
-  <div class="personas-container">
+  <div class="personas-container ion-padding">
     <ion-label>Número de personas</ion-label>
     <div class="contador-personas">
       <ion-button fill="clear" (click)="disminuirPersonas()">-</ion-button>
@@ -53,10 +57,10 @@
     </div>
   </div>
 
-  <!-- Iconos de personas -->
+  <!-- Lista de personas -->
   <ion-list>
     <ion-item *ngFor="let persona of personas">
-      <ion-button (click)="seleccionarPersona(persona)" [color]="personaSeleccionada === persona ? 'primary' : 'light'">
+      <ion-button expand="block" (click)="seleccionarPersona(persona)" [color]="personaSeleccionada === persona ? 'primary' : 'light'">
         {{ persona }}
       </ion-button>
     </ion-item>
@@ -77,7 +81,7 @@
     </ion-card>
   </ion-list>
 
-  <!-- Lista de pedidos por persona con botón "Vaciar Pedido" en cada tarjeta -->
+  <!-- Lista de pedidos por persona con botón "Vaciar Pedido" -->
   <ion-list>
     <ion-card *ngFor="let persona of personas">
       <ion-card-header>

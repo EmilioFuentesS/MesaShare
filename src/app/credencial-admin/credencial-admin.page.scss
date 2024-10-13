@@ -1,0 +1,48 @@
+ion-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .instruction-text {
+    text-align: center;
+    color: #666;
+    font-size: 14px;
+    margin-top: 20px;
+  }
+
+  .scanner-frame {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 40px;
+    width: 100%;
+    height: 300px; /* Ajusta el tamaño del área de escaneo */
+  }
+
+  .scanner-box {
+    width: 250px;
+    height: 250px;
+    border: 3px dashed #1E88E5; /* Color de borde del recuadro */
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.05); /* Fondo ligero */
+  }
+
+  .scanner-box p {
+    text-align: center;
+    color: #1E88E5; /* Color del texto dentro del recuadro */
+    font-size: 14px;
+  }
+
+  ion-button {
+    margin-top: 20px;
+    font-size: 16px;
+    --background: #1E88E5; /* Color del botón */
+    --background-activated: #1565C0; /* Color cuando se hace clic */
+    --border-radius: 20px; /* Bordes redondeados */
+    width: 90%; /* Ocupa el 90% del ancho */
+  }
+}

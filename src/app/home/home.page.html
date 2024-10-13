@@ -1,16 +1,10 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      MesaShare
     </ion-title>
-
-    <!-- Icono de admin en la parte superior derecha -->
-    <ion-buttons slot="end">
-      <ion-button [routerLink]="['/face-id']">
-        <ion-icon name="person-circle-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-
+    <button mat-raised-button color="primary" class="staff-button" [routerLink]="['/credencial-admin']">
+      Staff
+    </button> 
   </ion-toolbar>
 </ion-header>
 
