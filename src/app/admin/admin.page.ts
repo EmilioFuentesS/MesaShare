@@ -34,6 +34,12 @@ export class AdminPage implements OnInit {
     this.cargarProductos();
   }
 
+  cargarProductos() {
+    this.mesaAPIService.getMenuItems().subscribe((data: ClProducto[]) => { // Cambiado a ClProducto[]
+      this.productos = data; // Asignar los productos a la variable
+    }, error => {
+      console.error('Error al cargar productos:', error);
+    });
   // Método para cargar los productos desde el servicio (SQLite/API)
   async cargarProductos() {
     const loading = await this.loadingController.create({
