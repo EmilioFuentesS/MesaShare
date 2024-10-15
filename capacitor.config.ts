@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'MesaShare',
   webDir: 'www',
   server: {
-    androidScheme: 'https'
+    androidScheme: 'http'
   },
   plugins: {
     CapacitorSQLite: {

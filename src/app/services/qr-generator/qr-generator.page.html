@@ -4,7 +4,6 @@
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
-
     <ion-title>Generar QR Mesero</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -32,10 +31,17 @@
     <h2>Código QR Generado:</h2>
     <img [src]="qrCodeImage" alt="Código QR" class="qr-image">
     
-    <!-- Botón para descargar el QR -->
+    <!-- Botón para descargar el PDF -->
     <ion-button expand="block" color="secondary" (click)="downloadQRCode()">
-      Descargar QR
+      Descargar Credencial en PDF
     </ion-button>
+
+   <!-- Botón para compartir el PDF -->
+    <ion-button expand="block" color="tertiary" (click)="shareQRCode()">
+     Compartir Credencial
+     </ion-button>
+
+    
   </div>
 
   <!-- Botón para volver a la lista de meseros -->

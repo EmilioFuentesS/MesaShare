@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SQLiteService } from '../services/sqlite/sqlite.service'; // Importa el servicio SQLite
@@ -9,7 +9,7 @@ import { ToastController, AlertController } from '@ionic/angular'; // Importa To
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
 })
-export class LoginPage {
+export class LoginPage implements OnInit {
   loginForm: FormGroup;
   field: string = ""; // Para mostrar campos faltantes
 
@@ -27,6 +27,9 @@ export class LoginPage {
       password: ['', Validators.required]
     });
   }
+  ngOnInit(): void {
+    throw new Error('Method not implemented.');
+  }
  
 
   // Método para validar los campos
@@ -40,10 +43,9 @@ export class LoginPage {
     return true;
   }
 
-  // Método para iniciar sesión
   async onLogin() {
     const { username, password } = this.loginForm.value;
-
+  
     if (this.validateModel(this.loginForm.value)) {
       try {
         const user = await this.sqliteService.loginUser(username, password);

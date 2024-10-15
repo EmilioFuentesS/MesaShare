@@ -11,7 +11,7 @@
 </ion-header>
 
 <ion-content padding>
-  <form [formGroup]="menuForm" (ngSubmit)="onFormSubmit(menuForm.value)">
+  <form [formGroup]="menuForm" (ngSubmit)="onFormSubmit()">
     <ion-item>
       <ion-label position="floating">Nombre</ion-label>
       <ion-input type="text" formControlName="prod_name"></ion-input>

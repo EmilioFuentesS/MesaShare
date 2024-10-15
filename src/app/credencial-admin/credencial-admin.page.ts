@@ -20,9 +20,11 @@ export class CredencialAdminPage implements OnInit {
     private sqliteService: SQLiteService // Servicio SQLite
   ) {}
 
-  ngOnInit() {
-  
+  async ngOnInit() {
+    // Inicializar la base de datos SQLite
+    await this.sqliteService.initializeDB('my_database', 'mi_clave_secreta');
   }
+  
   // Método para verificar permisos de la cámara
   async checkPermission(): Promise<boolean> {
     const status = await BarcodeScanner.checkPermission({ force: true });
@@ -119,41 +121,49 @@ export class CredencialAdminPage implements OnInit {
         break;
 
       default:
-        // Validar primero en la API y luego en SQLite si no es uno de los predefinidos
-        this.qrService.getMeseroByTexto(content).subscribe(
-          (mesero: ClMesero | undefined) => {
-            if (mesero) {
-              this.router.navigate(['/admin']);
-              this.showWelcomeMessage(`Bienvenido Mesero: ${mesero.nombre}`);
-            } else {
-              // Si no se encuentra en la API, buscar en SQLite
-              this.validateLocalMesero(content);
-            }
-          },
-          (error) => {
-            console.error('Error al obtener el mesero:', error);
-            this.showErrorMessage('Ocurrió un error durante la validación del QR.');
-          }
-        );
+        // Validar primero en SQLite y luego en la API si no es uno de los predefinidos
+        this.validateLocalMesero(content);
         break;
     }
   }
 
-  // Validar mesero en la base de datos SQLite si no se encuentra en la API
+  // Validar mesero en la base de datos SQLite primero
   async validateLocalMesero(textoQR: string) {
     try {
       const mesero = await this.sqliteService.getMeseroByTexto(textoQR);
       if (mesero) {
+        // Mesero encontrado en SQLite, se redirige a la página de admin
         this.router.navigate(['/admin']);
         this.showWelcomeMessage(`Bienvenido Mesero: ${mesero.nombre}`);
       } else {
-        this.showErrorMessage('El código QR no es válido.');
+        // Si no está en SQLite, se busca en la API
+        this.validateMeseroInAPI(textoQR);
       }
     } catch (error) {
       console.error('Error al validar el mesero en SQLite:', error);
       this.showErrorMessage('Ocurrió un error durante la validación en la base de datos.');
     }
   }
+
+  // Validar mesero en la API si no se encuentra en SQLite
+async validateMeseroInAPI(textoQR: string) {
+  this.qrService.getMeseroByTexto(textoQR).subscribe(
+    async (mesero: ClMesero | undefined) => {
+      if (mesero) {
+        // Si el mesero se encuentra en la API, se inserta en SQLite
+        await this.sqliteService.addMesero(mesero.nombre, mesero.qrCode, mesero.texto);
+        this.router.navigate(['/admin']);
+        this.showWelcomeMessage(`Bienvenido Mesero: ${mesero.nombre}`);
+      } else {
+        this.showErrorMessage('El código QR no es válido.');
+      }
+    },
+    (error) => {
+      console.error('Error al obtener el mesero desde la API:', error);
+      this.showErrorMessage('Ocurrió un error durante la validación del QR.');
+    }
+  );
+}
 
   // Método para preparar el escaneo
   prepareScan() {

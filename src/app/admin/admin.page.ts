@@ -1,8 +1,8 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core'; 
 import { IonMenu } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { MesaAPIService, ClMenuItem } from '../services/MesaAPI/mesa-api.service'; 
-import { SQLiteService } from '../services/sqlite/sqlite.service';
+import { AlertController, LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-admin',
@@ -15,22 +15,35 @@ export class AdminPage implements OnInit {
   username: string | null = null;
 
   productoSeleccionado: ClMenuItem | null = null;  // Para almacenar el producto seleccionado para edición
+  nuevoProducto: ClMenuItem = { id: 0, nombre: '', precio: 0, cantidad: 0 }; // Nuevo producto a agregar
 
-  constructor(private router: Router, private mesaAPIService: MesaAPIService, private sqliteService: SQLiteService) {}
+  constructor(
+    private router: Router, 
+    private mesaAPIService: MesaAPIService, 
+    private alertController: AlertController, 
+    private loadingController: LoadingController
+  ) {}
 
   ngOnInit() {
     // Suscribirse al Observable de productos para recibir actualizaciones en tiempo real
     this.mesaAPIService.getProductosObservable().subscribe((productos) => {
-    this.productos = productos;
+      this.productos = productos; // Actualización automática de la lista
     });
 
-    // Cargar productos inicialmente
+    // Cargar los productos cuando se inicia el componente
     this.cargarProductos();
   }
 
-  cargarProductos() {
-    // Cargar los productos desde el servicio
-    this.mesaAPIService.getMenuItems().subscribe();
+  // Método para cargar los productos desde el servicio (SQLite/API)
+  async cargarProductos() {
+    const loading = await this.loadingController.create({
+      message: 'Cargando productos...',
+    });
+    await loading.present();
+
+    this.mesaAPIService.cargarProductos(); // Cargar productos desde el servicio
+
+    loading.dismiss(); // Cerrar el loader cuando la carga termine
   }
 
   // Método para seleccionar un producto para edición
@@ -44,10 +57,7 @@ export class AdminPage implements OnInit {
       this.mesaAPIService.updateMenuItem(this.productoSeleccionado.id, this.productoSeleccionado).subscribe({
         next: () => {
           console.log(`Producto ${this.productoSeleccionado?.id} actualizado`);
-          // Refrescar la lista de productos después de actualizar
-          this.cargarProductos();
-          // Limpiar la selección después de la edición
-          this.productoSeleccionado = null;
+          this.productoSeleccionado = null; // Limpiar la selección después de la edición
         },
         error: (err) => {
           console.error('Error al actualizar producto', err);
@@ -56,15 +66,71 @@ export class AdminPage implements OnInit {
     }
   }
 
-  onEliminarProducto(productId: number) {
-    this.mesaAPIService.deleteMenuItem(productId).subscribe({
-      next: () => {
-        console.log(`Producto ${productId} eliminado`);
-        // Los productos se actualizan automáticamente a través del Subject
+  // Método para eliminar un producto
+  async onEliminarProducto(productId: number) {
+    const alert = await this.alertController.create({
+      header: 'Confirmar eliminación',
+      message: '¿Estás seguro que deseas eliminar este producto?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+        },
+        {
+          text: 'Eliminar',
+          handler: async () => {
+            const loading = await this.loadingController.create({
+              message: 'Eliminando producto...',
+            });
+            await loading.present();
+
+            this.mesaAPIService.deleteMenuItem(productId).subscribe({
+              next: async () => {
+                console.log(`Producto ${productId} eliminado`);
+                await loading.dismiss();
+                this.presentAlert('Éxito', 'Producto eliminado correctamente.');
+              },
+              error: async (err) => {
+                console.error('Error al eliminar producto', err);
+                await loading.dismiss();
+                this.presentAlert('Error', 'No se pudo eliminar el producto.');
+              }
+            });
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  // Método para agregar un nuevo producto
+  async agregarProducto() {
+    const loading = await this.loadingController.create({
+      message: 'Agregando producto...',
+    });
+    await loading.present();
+
+    this.mesaAPIService.addMenuItem(this.nuevoProducto).subscribe({
+      next: async () => {
+        console.log('Producto agregado');
+        this.nuevoProducto = { id: 0, nombre: '', precio: 0, cantidad: 0 }; // Limpiar el formulario
+        await loading.dismiss();
       },
-      error: (err) => {
-        console.error('Error al eliminar producto', err);
+      error: async (err) => {
+        console.error('Error al agregar producto', err);
+        await loading.dismiss();
       }
     });
+  }
+
+  // Mostrar alertas
+  async presentAlert(header: string, message: string) {
+    const alert = await this.alertController.create({
+      header,
+      message,
+      buttons: ['OK'],
+    });
+    await alert.present();
   }
 }

@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core'; 
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ClUser } from '../services/User/model/ClUser'; // Importar el modelo ClUser
 import { UserService } from '../services/User/user.service'; // Servicio de Usuario
 import { ToastController } from '@ionic/angular';
 import { SQLiteService } from '../services/sqlite/sqlite.service';
+
 
 @Component({
   selector: 'app-registrar',
@@ -13,30 +14,32 @@ import { SQLiteService } from '../services/sqlite/sqlite.service';
 })
 export class RegistrarPage implements OnInit {
 
-  registrarForm!: FormGroup;
+  registrarForm: FormGroup; // Inicializa el FormGroup correctamente
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private userService: UserService, // Cambiar SQLiteService a UserService para que use ambos
+    private userService: UserService,
     private toastController: ToastController,
     private sqliteService: SQLiteService
-  ) {}
-
-  ngOnInit() {
-   
-    // Inicializamos el formulario con validadores
+  ) {
+    // Ahora inicializamos el FormGroup en el constructor o en el ngOnInit
     this.registrarForm = this.fb.group({
-      username: ['', [Validators.required]],
+      username: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, this.passwordValidator]], // Valida el formato de la contraseña
-      confirmPassword: ['', [Validators.required]],
+      password: ['', [Validators.required, this.passwordValidator]],
+      confirmPassword: ['', Validators.required]
     }, { validator: this.passwordMatchValidator });
+  }
+
+  async ngOnInit() {
+    // Inicializa la base de datos SQLite
+    await this.sqliteService.initializeDB('my_database', 'mi_clave_secreta');
   }
 
   // Validador personalizado para la contraseña
   passwordValidator(control: any) {
-    const regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/; // Al menos 8 caracteres, una letra mayúscula, una minúscula, y un número
+    const regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
     return regex.test(control.value) ? null : { invalidPassword: true };
   }
 
@@ -47,38 +50,36 @@ export class RegistrarPage implements OnInit {
     return password === confirmPassword ? null : { passwordsMismatch: true };
   }
 
-  // Registrar el usuario
-  async registrarUsuario() {
-    if (this.registrarForm.valid) {
-      const formValues = this.registrarForm.value;
-      const nuevoUsuario = new ClUser({
-        username: formValues.username,
-        email: formValues.email,
-        password: formValues.password, // En texto plano, idealmente debería ser encriptada
-      });
+ // Método para registrar al usuario
+async registrarUsuario() {
+  if (this.registrarForm.valid) {
+    const formValues = this.registrarForm.value;
+    const nuevoUsuario = new ClUser({
+      username: formValues.username,
+      email: formValues.email,
+      password: formValues.password,
+    });
 
-      try {
-        // Llamar al servicio de registro para registrar en la API y sincronizar en SQLite
-        this.userService.registerUser(nuevoUsuario).subscribe(
-          async (response) => {
-            // Usuario registrado con éxito
-            this.presentToast('Usuario registrado exitosamente', 2000);
-            this.router.navigate(['/login']); // Redirigir al login tras el registro
-          },
-          (error) => {
-            // Manejo del error al registrar
-            console.error('Error en el registro:', error);
-            this.presentToast('Error al registrar usuario, inténtelo nuevamente.');
-          }
-        );
-      } catch (error) {
-        console.error('Error en el registro:', error);
-        this.presentToast('Error al registrar usuario, inténtelo nuevamente.');
-      }
-    } else {
-      this.presentToast('Por favor, complete el formulario correctamente.');
+    try {
+      this.userService.registerUser(nuevoUsuario).subscribe(
+        async (response) => {
+          console.log('Respuesta de la API:', response); // Comprobar la respuesta de la API
+          this.presentToast('Usuario registrado exitosamente', 2000);
+          this.router.navigate(['/login']);
+        },
+        (error) => {
+          console.error('Error en el registro:', JSON.stringify(error, null, 2)); // Más detalles del error
+          this.presentToast(`Error al registrar usuario: ${error.message || 'inténtelo nuevamente'}`);
+        }
+      );
+    } catch (error) {
+      console.error('Error en el registro:', error);
+      this.presentToast('Error al registrar usuario, inténtelo nuevamente.');
     }
+  } else {
+    this.presentToast('Por favor, complete el formulario correctamente.');
   }
+}
 
   // Función para mostrar mensajes tipo toast
   async presentToast(message: string, duration: number = 2000) {

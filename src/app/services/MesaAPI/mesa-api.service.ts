@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, of, BehaviorSubject } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { Observable, of, BehaviorSubject, from, firstValueFrom } from 'rxjs';
+import { catchError, tap, switchMap } from 'rxjs/operators';
 import { SQLiteService } from '../sqlite/sqlite.service'; // Servicio SQLite
 
 export interface ClMenuItem {
@@ -15,21 +15,26 @@ export interface ClMenuItem {
   providedIn: 'root'
 })
 export class MesaAPIService {
-  private apiUrl = 'http://localhost:3000/productos'; // URL de tu JSON-server
+  private apiUrl = 'http://192.168.182.190:3000/productos'; // URL del JSON-server desde el emulador
   private httpOptions = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
 
   private productosSubject = new BehaviorSubject<ClMenuItem[]>([]); // BehaviorSubject para los productos
 
   constructor(private http: HttpClient, private sqliteService: SQLiteService) {
-    this.getMenuItems().subscribe(); // Cargar los productos al iniciar
+    this.cargarProductos(); // Cargar productos al iniciar
+
+    // Escuchar cuando se restaure la conexión y sincronizar
+    window.addEventListener('online', () => {
+      console.log('Conexión a Internet restaurada. Intentando sincronizar...');
+      this.syncWithAPI();
+    });
   }
 
- 
   // Manejo de errores
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
       console.error(`Error en ${operation}:`, error);
-      return of(result as T);
+      return of(result as T); // Retorna un valor vacío para mantener el flujo de la app
     };
   }
 
@@ -38,94 +43,141 @@ export class MesaAPIService {
     return this.productosSubject.asObservable();
   }
 
-  // Obtener todos los items del menú desde la API y sincronizar con SQLite
-  getMenuItems(): Observable<ClMenuItem[]> {
-    return this.http.get<ClMenuItem[]>(this.apiUrl)
-      .pipe(
-        tap(async (items) => {
-          console.log('Items obtenidos del menú:', items);
-          this.productosSubject.next(items);
+  // Cargar productos desde SQLite y luego sincronizar con la API
+  cargarProductos() {
+    from(this.sqliteService.getProductos()).pipe(
+      tap((itemsSQLite) => {
+        console.log('Items obtenidos de SQLite:', itemsSQLite);
+        this.productosSubject.next(itemsSQLite); // Mostrar solo los productos de SQLite en la interfaz
 
-          // Sincronizar los productos obtenidos desde la API con SQLite
-          for (const item of items) {
-            try {
-              await this.sqliteService.addProducto(item.nombre, item.precio, item.cantidad);
-              console.log(`Producto sincronizado a SQLite: ${item.nombre}`);
-            } catch (error) {
-              console.error('Error al sincronizar producto con SQLite:', error);
-            }
+        // Si hay conexión, sincronizar con la API
+        if (navigator.onLine) {
+          this.syncWithAPI();
+        } else {
+          console.warn('Sin conexión a la API. Usando solo datos de SQLite.');
+        }
+      }),
+      catchError(this.handleError('cargarProductos', []))
+    ).subscribe();
+  }
+
+  // Sincronizar productos entre la API y SQLite bidireccionalmente
+  public syncWithAPI() {
+    this.http.get<ClMenuItem[]>(this.apiUrl).pipe(
+      tap(async (itemsAPI) => {
+        console.log('Items obtenidos desde la API:', itemsAPI);
+
+        // Sincronizar los productos de la API con SQLite
+        await this.syncProductosWithSQLite(itemsAPI);
+
+        // Obtener productos desde SQLite y sincronizar de vuelta a la API
+        const productosSQLite = await this.sqliteService.getProductos();
+        for (const producto of productosSQLite) {
+          const existsInAPI = itemsAPI.some(item => item.nombre === producto.nombre);
+          if (!existsInAPI) {
+            await firstValueFrom(this.addMenuItem(producto));
+            console.log(`Producto ${producto.nombre} sincronizado con la API.`);
           }
-        }),
-        catchError(this.handleError<ClMenuItem[]>('getMenuItems', []))
-      );
+        }
+
+        // Actualizar el observable con los productos sincronizados
+        const productosActualizados = await this.sqliteService.getProductos();
+        this.productosSubject.next(productosActualizados);
+      }),
+      catchError(this.handleError('syncWithAPI', []))
+    ).subscribe();
   }
 
-  // Agregar un nuevo item al menú
-  addMenuItem(item: ClMenuItem): Observable<ClMenuItem> {
-    return this.http.post<ClMenuItem>(this.apiUrl, item, this.httpOptions)
-      .pipe(
-        tap(async (newItem: ClMenuItem) => {
-          console.log('Item agregado:', newItem);
-          this.getMenuItems().subscribe(); // Refrescar la lista de productos
-
-          // Guardar en SQLite después de agregarlo a la API
-          try {
-            await this.sqliteService.addProducto(newItem.nombre, newItem.precio, newItem.cantidad);
-            console.log(`Producto sincronizado a SQLite: ${newItem.nombre}`);
-          } catch (error) {
-            console.error('Error al agregar producto a SQLite:', error);
-          }
-        }),
-        catchError(this.handleError<ClMenuItem>('addMenuItem'))
-      );
-  }
-
-  // Obtener un item del menú por ID
-  getMenuItem(id: number): Observable<ClMenuItem> {
-    return this.http.get<ClMenuItem>(`${this.apiUrl}/${id}`)
-      .pipe(
-        tap(item => console.log('Item obtenido:', item)),
-        catchError(this.handleError<ClMenuItem>(`getMenuItem id=${id}`))
-      );
-  }
-
-  // Actualizar un item del menú
-  updateMenuItem(id: number, item: ClMenuItem): Observable<ClMenuItem> {
-    return this.http.put<ClMenuItem>(`${this.apiUrl}/${id}`, item, this.httpOptions)
-      .pipe(
-        tap(async () => {
-          console.log(`Item actualizado con ID: ${id}`);
-          this.getMenuItems().subscribe(); // Refrescar la lista de productos
-
-          // Actualizar en SQLite
-          try {
-            await this.sqliteService.updateProducto(id, item.nombre, item.precio, item.cantidad);
+  // Sincronizar productos con SQLite verificando si han cambiado
+  public async syncProductosWithSQLite(items: ClMenuItem[]): Promise<void> {
+    try {
+      for (const item of items) {
+        const productoSQLite = await this.sqliteService.getProductoByNombre(item.nombre);
+        
+        // Si el producto no existe en SQLite, lo agregamos
+        if (!productoSQLite) {
+          await this.sqliteService.addProducto(item.nombre, item.precio, item.cantidad);
+          console.log(`Producto agregado a SQLite: ${item.nombre}`);
+        } else {
+          // Si el producto ya existe, verificamos si el precio o cantidad han cambiado
+          if (productoSQLite.precio !== item.precio || productoSQLite.cantidad !== item.cantidad) {
+            await this.sqliteService.updateProducto(productoSQLite.id, item.nombre, item.precio, item.cantidad);
             console.log(`Producto actualizado en SQLite: ${item.nombre}`);
-          } catch (error) {
-            console.error('Error al actualizar producto en SQLite:', error);
+          } else {
+            console.log(`Producto en SQLite ya está actualizado: ${item.nombre}`);
           }
-        }),
-        catchError(this.handleError<any>('updateMenuItem'))
-      );
+        }
+      }
+      console.log('Sincronización de productos con SQLite completada.');
+    } catch (error) {
+      console.error('Error al sincronizar productos con SQLite:', error);
+    }
   }
 
-  // Eliminar un item del menú
-  deleteMenuItem(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`, this.httpOptions)
-      .pipe(
-        tap(async () => {
-          console.log(`Item eliminado con ID: ${id}`);
-          this.getMenuItems().subscribe(); // Refrescar la lista de productos
+  // Agregar producto (SQLite + API si está en línea)
+  addMenuItem(producto: ClMenuItem): Observable<ClMenuItem> {
+    return new Observable<ClMenuItem>(observer => {
+      this.sqliteService.addProducto(producto.nombre, producto.precio, producto.cantidad).then(() => {
+        console.log('Producto agregado a SQLite');
+        if (navigator.onLine) {
+          this.http.get<ClMenuItem[]>(`${this.apiUrl}?nombre=${producto.nombre}`).pipe(
+            switchMap((productos) => {
+              if (productos.length === 0) {
+                return this.http.post<ClMenuItem>(this.apiUrl, producto, this.httpOptions);
+              } else {
+                console.log('Producto ya existe en la API.');
+                return of(productos[0]);
+              }
+            }),
+            tap((newProducto) => observer.next(newProducto)),
+            catchError(this.handleError('addMenuItem', producto))
+          ).subscribe();
+        } else {
+          observer.next(producto);
+        }
+      }).catch(err => observer.error(err));
+    });
+  }
 
-          // Eliminar de SQLite
-          try {
-            await this.sqliteService.deleteProducto(id);
-            console.log(`Producto eliminado de SQLite con ID: ${id}`);
-          } catch (error) {
-            console.error('Error al eliminar producto de SQLite:', error);
-          }
-        }),
-        catchError(this.handleError<void>('deleteMenuItem'))
-      );
+  // Actualizar producto (SQLite + API si está en línea)
+  updateMenuItem(id: number, item: ClMenuItem): Observable<ClMenuItem> {
+    return new Observable(observer => {
+      this.sqliteService.updateProducto(id, item.nombre, item.precio, item.cantidad).then(() => {
+        console.log('Producto actualizado en SQLite');
+        if (navigator.onLine) {
+          this.http.put<ClMenuItem>(`${this.apiUrl}/${id}`, item, this.httpOptions).pipe(
+            tap(() => observer.next(item)),
+            catchError(this.handleError('updateMenuItem', item))
+          ).subscribe();
+        } else {
+          observer.next(item);
+        }
+      }).catch(error => observer.error(error));
+    });
+  }
+
+  // Eliminar producto (SQLite + API si está en línea)
+  deleteMenuItem(id: number): Observable<void> {
+    return new Observable(observer => {
+      this.sqliteService.deleteProducto(id).then(() => {
+        console.log(`Producto eliminado de SQLite con ID: ${id}`);
+        if (navigator.onLine) {
+          this.http.delete<void>(`${this.apiUrl}/${id}`, this.httpOptions).pipe(
+            tap(() => observer.next()),
+            catchError(this.handleError('deleteMenuItem'))
+          ).subscribe();
+        } else {
+          observer.next();
+        }
+      }).catch(error => observer.error(error));
+    });
+  }
+
+  // Obtener productos solo desde la API
+  getMenuItemsFromAPI(): Observable<ClMenuItem[]> {
+    return this.http.get<ClMenuItem[]>(this.apiUrl).pipe(
+      tap((productosAPI) => console.log('Productos obtenidos desde la API:', productosAPI)),
+      catchError(this.handleError<ClMenuItem[]>('getMenuItemsFromAPI', []))
+    );
   }
 }

@@ -13,6 +13,7 @@
   </ion-toolbar>
 </ion-header>
 
+
 <!-- Menú lateral -->
 <ion-menu side="end" contentId="main-content">
   <ion-header>
@@ -29,11 +30,11 @@
           Home
         </ion-button>
       </ion-item>
-      <!-- Opción de navegación a Admin -->
+      <!-- Botón de Logout -->
       <ion-item>
-        <ion-button class="home-button" expand="full" routerLink="/admin">
-          <ion-icon name="home-outline" slot="start"></ion-icon>
-          Admin
+        <ion-button class="home-button" expand="full" (click)="logout()">
+          <ion-icon name="log-out-outline" slot="start"></ion-icon>
+          Cerrar sesión
         </ion-button>
       </ion-item>
     </ion-list>

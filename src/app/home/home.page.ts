@@ -14,7 +14,12 @@ export class HomePage implements AfterViewInit {
   @ViewChild('animatedImage', { read: ElementRef, static: true }) animatedImage!: ElementRef;
 
   constructor(private animationCtrl: AnimationController,private sqliteService: SQLiteService ) {}
-
+  
+  async ngOnInit() {
+    // Llamamos al método initializeDB pasando el nombre de la base de datos y la clave de cifrado
+    await this.sqliteService.initializeDB('my_database', 'mi_clave_secreta');
+  }
+  
  
   ngAfterViewInit() {
     this.playAnimation();

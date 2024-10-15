@@ -1,8 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>Registro</ion-title>
-
-    <!-- Botón de volver con flecha hacia atrás -->
     <ion-buttons slot="end">
       <ion-button [routerLink]="['/home']">
         <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
@@ -13,6 +11,7 @@
 
 <ion-content [fullscreen]="true">
   <form [formGroup]="registrarForm" (ngSubmit)="registrarUsuario()" class="register-form">
+    
     <!-- Campo de Usuario -->
     <ion-item>
       <ion-label position="floating">Usuario<span class="required">*</span></ion-label>
@@ -49,8 +48,8 @@
       </div>
       <div *ngIf="registrarForm.get('password')?.hasError('invalidPassword')">
         <ul>
-          <li>Debe contener al menos 4 números.</li>
-          <li>Debe contener al menos 3 letras.</li>
+          <li>Debe contener al menos 1 número.</li>
+          <li>Debe contener al menos 1 letra.</li>
           <li>Debe contener al menos 1 mayúscula.</li>
         </ul>
       </div>
@@ -65,7 +64,7 @@
       <div *ngIf="registrarForm.get('confirmPassword')?.hasError('required')">
         La confirmación de la contraseña es obligatoria.
       </div>
-      <div *ngIf="registrarForm.hasError('passwordMismatch')">
+      <div *ngIf="registrarForm.hasError('passwordsMismatch')">
         Las contraseñas no coinciden.
       </div>
     </div>

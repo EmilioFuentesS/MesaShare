@@ -73,21 +73,27 @@
           },
           "defaultConfiguration": "production"
         },
+        
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
-          "configurations": {
-            "production": {
-              "buildTarget": "app:build:production"
-            },
-            "development": {
-              "buildTarget": "app:build:development"
-            },
-            "ci": {
-              "progress": false
-            }
-          },
-          "defaultConfiguration": "development"
-        },
+  "builder": "@angular-devkit/build-angular:dev-server",
+  "options": {
+    "ssl": false
+  },
+  "configurations": {
+    "production": {
+      "buildTarget": "app:build:production"
+    },
+    "development": {
+      "buildTarget": "app:build:development",
+      "ssl": false
+    },
+    "ci": {
+      "progress": false
+    }
+  },
+  "defaultConfiguration": "development"
+},
+
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
