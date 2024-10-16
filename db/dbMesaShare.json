@@ -1,13 +1,5 @@
 {
-  "productos": [
-    {
-      "id": 1,
-      "nombre": "hola",
-      "precio": 2000,
-      "cantidad": 2,
-      "fecha": "2024-10-16T21:24:12.069Z"
-    }
-  ],
+  "productos": [],
   "meseros": [],
   "users": []
 }

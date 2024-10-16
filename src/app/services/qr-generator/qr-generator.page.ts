@@ -129,5 +129,28 @@ export class QrGeneratorPage {
       reader.readAsDataURL(blob);
     });
   }
+
+  // Método para compartir la credencial y el código QR
+  async shareQRCode() {
+    if (!this.savedFileUri) {
+      alert('Por favor, descarga el PDF primero.');
+      return;
+    }
+
+    try {
+      await Share.share({
+        title: 'Compartir Credencial',
+        text: 'Aquí tienes la credencial de trabajador con su código QR.',
+        url: this.savedFileUri, // Compartir la URI del archivo PDF
+        dialogTitle: 'Compartir con',
+      });
+    } catch (error) {
+      console.error('Error al compartir el archivo:', error);
+      alert('Ocurrió un error al compartir el archivo.');
+    }
+  }
+
+
+
 }
   
