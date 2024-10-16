@@ -115,20 +115,27 @@ export class QrService {
     });
   }
 
-  // Eliminar mesero de SQLite y API (si está en línea)
-  deleteMesero(id: number): Observable<void> {
-    return new Observable(observer => {
-      this.sqliteService.deleteMesero(id).then(() => {
-        console.log(`Mesero eliminado de SQLite con ID: ${id}`);
-        if (navigator.onLine) {
-          this.syncWithAPI({ id }, 'DELETE');
-        } else {
-          this.operacionesPendientes.push({ tipo: 'DELETE', id });
-        }
-        observer.next();
-      }).catch(err => observer.error(err));
-    });
-  }
+// Eliminar mesero de SQLite y API (si está en línea)
+deleteMesero(id: number): Observable<void> {
+  return new Observable(observer => {
+    this.sqliteService.deleteMesero(id).then(() => {
+      console.log(`Mesero eliminado de SQLite con ID: ${id}`);
+      if (navigator.onLine) {
+        this.http.delete<void>(`${this.apiUrl}/${id}`, this.httpOptions).pipe(
+          tap(() => {
+            console.log(`Mesero eliminado en la API con ID: ${id}`);
+            observer.next();
+          }),
+          catchError(this.handleError<void>('deleteMesero'))
+        ).subscribe();
+      } else {
+        this.operacionesPendientes.push({ tipo: 'DELETE', id });
+        observer.next(); // Asegúrate de resolver el observable también si no hay conexión
+      }
+    }).catch(err => observer.error(err));
+  });
+}
+
 
   // Sincronizar las operaciones CRUD con la API cuando haya conexión
   private syncWithAPI(mesero: ClMesero | { id: number }, method: string) {

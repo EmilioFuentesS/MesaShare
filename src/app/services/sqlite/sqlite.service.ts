@@ -32,11 +32,8 @@ export class SQLiteService {
   async initializeDB(dbname: string, db_key: string) {
     if (this.native) {
       await this.initializeNativeDB(dbname, db_key);
-    } else {
-      await this.initializeWebDB(dbname);
-    }
-  }
-
+    } 
+  } 
   // Inicializar la base de datos nativa (iOS/Android)
   private async initializeNativeDB(dbname: string, db_key: string) {
     try {
@@ -58,34 +55,7 @@ export class SQLiteService {
     }
   }
 
-  // Inicializar la base de datos para la web
-  private async initializeWebDB(dbname: string) {
-    try {
-      const jeepEl = document.querySelector('jeep-sqlite');
-      if (!jeepEl) {
-        throw new Error('El elemento jeep-sqlite no está presente en el DOM.');
-      }
 
-      // Espera a que el componente `jeep-sqlite` esté listo
-      await customElements.whenDefined('jeep-sqlite');
-
-      const isConn = await this.sqliteConnection.isConnection(dbname, false);
-      if (!isConn.result) {
-        this.db = await this.sqliteConnection.createConnection(dbname, false, 'no-encryption', 1, false);
-        await this.db.open();
-        console.log(`Base de datos "${dbname}" inicializada correctamente para la web`);
-
-        // Crear las tablas
-        await this.createTables();
-      } else {
-        this.db = await this.sqliteConnection.retrieveConnection(dbname, false);
-        await this.db.open();
-        console.log(`Conexión a la base de datos "${dbname}" recuperada para la web`);
-      }
-    } catch (error) {
-      console.error(`Error al inicializar la base de datos en la web:`, error);
-    }
-  }
 
   // Verificar si la base de datos está lista
   private async ensureDBReady(): Promise<void> {
@@ -264,6 +234,7 @@ async createTables() {
       }
     }
   }
+
 
 // Método para agregar un producto a SQLite si no existe
 async addProducto(nombre: string, precio: number, cantidad: number): Promise<void> {
@@ -512,20 +483,21 @@ async getMeseroByTexto(texto: string): Promise<ClMesero | null> {
       }
     }
   }
-
-  async deleteMesero(id: number): Promise<void> {
-    await this.ensureDBReady();
-    if (this.db) {
-      try {
-        const query = `DELETE FROM meseros WHERE id = ?;`;
-        const values = [id];
-        await this.db.run(query, values);
-        console.log('Mesero eliminado de SQLite.');
-      } catch (error) {
-        console.error('Error al eliminar mesero en SQLite:', error);
-      }
+// Método para eliminar un mesero de SQLite
+async deleteMesero(id: number): Promise<void> {
+  await this.ensureDBReady();
+  if (this.db) {
+    try {
+      const query = `DELETE FROM meseros WHERE id = ?;`;
+      const values = [id];
+      await this.db.run(query, values);
+      console.log('Mesero eliminado de SQLite.');
+    } catch (error) {
+      console.error('Error al eliminar mesero en SQLite:', error);
     }
   }
+}
+
 
  // Verificar si un mesero ya existe en SQLite por nombre
 async meseroExists(nombre: string): Promise<boolean> {

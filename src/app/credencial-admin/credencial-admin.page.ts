@@ -99,44 +99,42 @@ export class CredencialAdminPage implements OnInit {
     }
   }
 
-  // Maneja los códigos predefinidos
   async handlePredefinedCodes(content: string) {
+    console.log('Contenido del QR escaneado:', content);
+    
     switch (content) {
       case 'admin1-code':
-        // Redirigir a /admin y mostrar mensaje personalizado para Bryan Chávez
         this.router.navigate(['/admin']);
         this.showWelcomeMessage('Bienvenido Administrador Bryan Chávez');
         break;
-
+  
       case 'admin2-code':
-        // Redirigir a /admin y mostrar mensaje personalizado para Emilio Fuentes
         this.router.navigate(['/admin']);
         this.showWelcomeMessage('Bienvenido Administrador Emilio Fuentes');
         break;
-
+  
       case 'empleado':
-        // Redirigir a /admin y mostrar mensaje para Mesero
         this.router.navigate(['/admin']);
         this.showWelcomeMessage('Bienvenido Mesero');
         break;
-
+  
       default:
-        // Validar primero en SQLite y luego en la API si no es uno de los predefinidos
+        console.log('Validando QR en SQLite y API...');
         this.validateLocalMesero(content);
         break;
     }
   }
+  
 
-  // Validar mesero en la base de datos SQLite primero
   async validateLocalMesero(textoQR: string) {
     try {
+      console.log('Validando en SQLite el texto:', textoQR);
       const mesero = await this.sqliteService.getMeseroByTexto(textoQR);
       if (mesero) {
-        // Mesero encontrado en SQLite, se redirige a la página de admin
         this.router.navigate(['/admin']);
         this.showWelcomeMessage(`Bienvenido Mesero: ${mesero.nombre}`);
       } else {
-        // Si no está en SQLite, se busca en la API
+        console.log('Mesero no encontrado en SQLite, validando en la API...');
         this.validateMeseroInAPI(textoQR);
       }
     } catch (error) {
@@ -144,6 +142,7 @@ export class CredencialAdminPage implements OnInit {
       this.showErrorMessage('Ocurrió un error durante la validación en la base de datos.');
     }
   }
+  
 
   // Validar mesero en la API si no se encuentra en SQLite
 async validateMeseroInAPI(textoQR: string) {

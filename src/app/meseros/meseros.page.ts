@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { AlertController, LoadingController } from '@ionic/angular';
 import { Router } from '@angular/router';
-import jsPDF from 'jspdf';
-import { QrService } from '../services/qr-generator/qr.service'; // Importar el servicio
 import { ClMesero } from '../services/qr-generator/model/ClMesero'; // Importar el modelo de mesero
-import * as QRCode from 'qrcode'; // Importar la librería qrcode
 import { SQLiteService } from '../services/sqlite/sqlite.service';
+import { QrService } from '../services/qr-generator/qr.service'; // Importar el servicio
 import { Share } from '@capacitor/share'; // Capacitor Share
-import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
+import { Directory, Filesystem } from '@capacitor/filesystem';
+import jsPDF from 'jspdf';
+import * as QRCode from 'qrcode'; // Importar la librería qrcode
 
 @Component({
   selector: 'app-meseros',
@@ -42,8 +42,7 @@ export class MeserosPage implements OnInit {
 
     try {
       // Cargar meseros desde SQLite
-      const meserosSQLite = await this.sqliteService.getMeseros();
-      this.meseros = meserosSQLite;
+      this.meseros = await this.sqliteService.getMeseros();
 
       // Si hay conexión, sincronizar con la API
       if (navigator.onLine) {
@@ -76,14 +75,14 @@ async deleteMesero(meseroId: number) {
             await this.sqliteService.deleteMesero(meseroId);
             console.log('Mesero eliminado de SQLite');
 
-            // Sincronizar con la API si hay conexión, o guardar la operación para después
+            // Sincronizar con la API si hay conexión
             if (navigator.onLine) {
               await this.qrService.deleteMesero(meseroId).toPromise();
               console.log('Mesero eliminado de la API');
             } else {
-              // Guardar la operación para sincronizar más tarde cuando haya conexión
+              // Guardar la operación para sincronizar más tarde
               console.warn('Sin conexión a Internet. La operación de eliminación se sincronizará más tarde.');
-              this.qrService.queueDeleteOperation(meseroId); // Método para añadir a la cola de operaciones pendientes
+              this.qrService.queueDeleteOperation(meseroId); // Añadir a la cola de operaciones pendientes
             }
 
             // Recargar la lista de meseros después de la eliminación
@@ -127,85 +126,120 @@ async deleteMesero(meseroId: number) {
     this.router.navigate(['/mesero-edit', meseroId]);
   }
 
-  // Método para descargar el QR o un PDF con los datos solicitados
   async downloadQRCode(qrCodeDataUrl: string, meseroNombre: string) {
     try {
       // Crear un nuevo documento PDF
       const pdf = new jsPDF();
-
+  
       // Añadir un recuadro y el texto "Credencial de Mesero"
       pdf.setFontSize(18);
       pdf.text('Credencial de Mesero', 10, 20);
-
+  
       // Añadir el nombre del mesero
       pdf.setFontSize(14);
       pdf.text(`Nombre: ${meseroNombre}`, 10, 40);
-
+  
       // Añadir la fecha de creación (actual)
       const fechaActual = new Date().toLocaleDateString();
       pdf.text(`Fecha de creación: ${fechaActual}`, 10, 60);
-
+  
       // Añadir la imagen QR al PDF
       const qrImage = qrCodeDataUrl;
       if (qrImage) {
         pdf.addImage(qrImage, 'PNG', 10, 70, 50, 50); // Posición y tamaño de la imagen en el PDF
       }
-
-      // Guardar el archivo en la carpeta de descargas del dispositivo
-      const pdfOutput = pdf.output('datauristring');
-      const fileName = `Credencial_${meseroNombre}.pdf`;
-
+  
+      // Generar el PDF como un Blob
+      const pdfBlob = pdf.output('blob');
+  
       // Guardar el archivo en el sistema de archivos del dispositivo
+      const fileName = `Credencial_${meseroNombre}.pdf`;
+  
+      // Guardar el archivo PDF
       const savedFile = await Filesystem.writeFile({
         path: fileName,
-        data: pdfOutput.split(',')[1], // Guardar solo la parte base64
-        directory: Directory.Documents, // Guardar en la carpeta de Descargas
-        encoding: Encoding.UTF8,
+        data: await this.blobToBase64(pdfBlob), // Convertir Blob a base64
+        directory: Directory.Documents,
       });
-
+  
       console.log('Archivo PDF guardado:', savedFile.uri);
+      alert('PDF descargado en la carpeta Documentos');
+  
+      // Abrir el archivo automáticamente
+      await this.openFile(savedFile.uri);
+  
     } catch (error) {
       console.error('Error al descargar el QR o generar el PDF:', error);
       alert('Error al guardar el PDF.');
     }
   }
-
-  // Método para compartir la credencial y el código QR
-  async shareQRCode(qrCodeDataUrl: string, meseroNombre: string) {
+  
+  // Método para abrir el archivo PDF
+  async openFile(fileUri: string) {
     try {
-      // Crear un PDF para compartir
-      const pdf = new jsPDF();
-      pdf.setFontSize(18);
-      pdf.text('Credencial de Mesero', 10, 20);
-      pdf.setFontSize(14);
-      pdf.text(`Nombre: ${meseroNombre}`, 10, 40);
-      const fechaActual = new Date().toLocaleDateString();
-      pdf.text(`Fecha de creación: ${fechaActual}`, 10, 60);
-      const qrImage = qrCodeDataUrl;
-      if (qrImage) {
-        pdf.addImage(qrImage, 'PNG', 10, 70, 50, 50); // Añadir el QR al PDF
-      }
-      const pdfOutput = pdf.output('datauristring');
-      const fileName = `Credencial_${meseroNombre}.pdf`;
-
-      // Guardar el PDF para poder compartirlo
-      const savedFile = await Filesystem.writeFile({
-        path: fileName,
-        data: pdfOutput.split(',')[1],
-        directory: Directory.Documents,
-        encoding: Encoding.UTF8,
-      });
-
-      // Compartir el archivo utilizando Capacitor Share
       await Share.share({
-        title: `Credencial de ${meseroNombre}`,
-        text: 'Aquí tienes la credencial con el código QR.',
-        url: savedFile.uri,
-        dialogTitle: 'Compartir Credencial',
+        title: 'Compartir Credencial',
+        text: 'Aquí tienes la credencial de trabajador con su código QR.',
+        url: fileUri, // Compartir la URI del archivo PDF
+        dialogTitle: 'Compartir con',
       });
     } catch (error) {
-      console.error('Error al compartir el QR:', error);
-      alert('Error al compartir el archivo.');
+      console.error('Error al abrir el archivo:', error);
     }
   }
+  
+  // Método para convertir Blob a base64
+  private async blobToBase64(blob: Blob): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+  
+
+// Método para compartir la credencial y el código QR
+async shareQRCode(qrCodeDataUrl: string, meseroNombre: string) {
+  try {
+    // Crear un PDF para compartir
+    const pdf = new jsPDF();
+    pdf.setFontSize(18);
+    pdf.text('Credencial de Mesero', 10, 20);
+    pdf.setFontSize(14);
+    pdf.text(`Nombre: ${meseroNombre}`, 10, 40);
+    const fechaActual = new Date().toLocaleDateString();
+    pdf.text(`Fecha de creación: ${fechaActual}`, 10, 60);
+    
+    const qrImage = qrCodeDataUrl;
+    if (qrImage) {
+      pdf.addImage(qrImage, 'PNG', 10, 70, 50, 50); // Añadir el QR al PDF
+    }
+
+    // Generar el PDF como un Blob
+    const pdfOutput = pdf.output('blob');
+
+    // Guardar el archivo PDF
+    const fileName = `Credencial_${meseroNombre}.pdf`;
+    const savedFile = await Filesystem.writeFile({
+      path: fileName,
+      data: await this.blobToBase64(pdfOutput), // Convertir el Blob a base64
+      directory: Directory.Documents,
+    });
+
+    // Compartir el archivo utilizando Capacitor Share
+    await Share.share({
+      title: `Credencial de ${meseroNombre}`,
+      text: 'Aquí tienes la credencial con el código QR.',
+      url: savedFile.uri,
+      dialogTitle: 'Compartir Credencial',
+    });
+
+  } catch (error) {
+    console.error('Error al compartir el QR:', error);
+    alert('Error al compartir el archivo.');
+  }
 }
+
+}
+

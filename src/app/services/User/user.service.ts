@@ -56,7 +56,7 @@ export class UserService {
       this.http.post<ClUser>(this.apiUrl, user, this.httpOptions).pipe(
         tap(() => console.log(`Usuario sincronizado con la API: ${user.username}`)),
         catchError(this.handleError<ClUser>('syncUserWithAPI'))
-      ).subscribe();
+      ).subscribe() 
     }
   }
 

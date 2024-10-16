@@ -32,9 +32,9 @@
     <img [src]="qrCodeImage" alt="Código QR" class="qr-image">
     
     <!-- Botón para descargar el PDF -->
-    <ion-button expand="block" color="secondary" (click)="downloadQRCode()">
-      Descargar Credencial en PDF
-    </ion-button>
+<ion-button expand="block" color="secondary" (click)="downloadQRCode(qrCodeImage, meseroNombre)">
+  Descargar Credencial en PDF
+</ion-button>
 
    <!-- Botón para compartir el PDF -->
     <ion-button expand="block" color="tertiary" (click)="shareQRCode()">
