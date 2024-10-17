@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { IonMenu } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { ClMenuItem, MesaAPIService } from '../services/ProductosAPI/mesa-api.service'; // Asegúrate de usar la ruta correcta
+import { MesaAPIService } from '../services/ProductosAPI/mesa-api.service'; // Asegúrate de usar la ruta correcta
 import { SQLiteService } from '../services/SQLite/sqlite.service';
 import { UserService } from '../services/UsuariosAPI/user.service'; // Servicio de usuarios
 import { AlertController, LoadingController } from '@ionic/angular';
@@ -66,7 +66,7 @@ export class InicioPage implements OnInit {
       } else {
         // Si SQLite está vacío, sincronizamos con la API
         if (navigator.onLine) {
-          const productosAPI: ClMenuItem[] = (await this.mesaAPIService.getMenuItemsFromAPI().toPromise()) || [];
+          const productosAPI: ClProducto[] = (await this.mesaAPIService.getMenuItemsFromAPI().toPromise()) || [];
           if (productosAPI.length > 0) {
             this.menuItems = this.duplicarProductosPorCantidad(productosAPI);
             this.todosLosItems = [...this.menuItems]; // Guardar una copia para no perder la lista original
@@ -91,8 +91,8 @@ export class InicioPage implements OnInit {
   }
 
 // Duplicar los productos por cantidad, generando IDs numéricos únicos
-duplicarProductosPorCantidad(productos: ClMenuItem[]): ClMenuItem[] {
-  let productosDuplicados: ClMenuItem[] = [];
+duplicarProductosPorCantidad(productos: ClProducto[]): ClProducto[] {
+  let productosDuplicados: ClProducto[] = [];
 
   productos.forEach(producto => {
     for (let i = 0; i < producto.cantidad; i++) {

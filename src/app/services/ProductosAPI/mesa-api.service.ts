@@ -3,13 +3,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of, BehaviorSubject, from, firstValueFrom } from 'rxjs';
 import { catchError, tap, switchMap } from 'rxjs/operators';
 import { SQLiteService } from '../SQLite/sqlite.service'; // Servicio SQLite
+import { ClProducto } from './model/ClProducto';
 
-export interface ClMenuItem {
-  id: number;
-  nombre: string;
-  precio: number;
-  cantidad: number;
-}
+
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +14,7 @@ export class MesaAPIService {
   private apiUrl = 'http://192.168.182.190:3000/productos'; // URL del JSON-server desde el emulador
   private httpOptions = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
 
-  private productosSubject = new BehaviorSubject<ClMenuItem[]>([]); // BehaviorSubject para los productos
+  private productosSubject = new BehaviorSubject<ClProducto[]>([]); // BehaviorSubject para los productos
 
   constructor(private http: HttpClient, private sqliteService: SQLiteService) {
     this.cargarProductos(); // Cargar productos al iniciar
@@ -39,7 +35,7 @@ export class MesaAPIService {
   }
 
   // Observable para productos
-  getProductosObservable(): Observable<ClMenuItem[]> {
+  getProductosObservable(): Observable<ClProducto[]> {
     return this.productosSubject.asObservable();
   }
 
@@ -63,7 +59,7 @@ export class MesaAPIService {
 
   // Sincronizar productos entre la API y SQLite bidireccionalmente
   public syncWithAPI() {
-    this.http.get<ClMenuItem[]>(this.apiUrl).pipe(
+    this.http.get<ClProducto[]>(this.apiUrl).pipe(
       tap(async (itemsAPI) => {
         console.log('Items obtenidos desde la API:', itemsAPI);
 
@@ -89,7 +85,7 @@ export class MesaAPIService {
   }
 
   // Sincronizar productos con SQLite verificando si han cambiado
-  public async syncProductosWithSQLite(items: ClMenuItem[]): Promise<void> {
+  public async syncProductosWithSQLite(items: ClProducto[]): Promise<void> {
     try {
       for (const item of items) {
         const productoSQLite = await this.sqliteService.getProductoByNombre(item.nombre);
@@ -115,15 +111,15 @@ export class MesaAPIService {
   }
 
   // Agregar producto (SQLite + API si está en línea)
-  addMenuItem(producto: ClMenuItem): Observable<ClMenuItem> {
-    return new Observable<ClMenuItem>(observer => {
+  addMenuItem(producto: ClProducto): Observable<ClProducto> {
+    return new Observable<ClProducto>(observer => {
       this.sqliteService.addProducto(producto.nombre, producto.precio, producto.cantidad).then(() => {
         console.log('Producto agregado a SQLite');
         if (navigator.onLine) {
-          this.http.get<ClMenuItem[]>(`${this.apiUrl}?nombre=${producto.nombre}`).pipe(
+          this.http.get<ClProducto[]>(`${this.apiUrl}?nombre=${producto.nombre}`).pipe(
             switchMap((productos) => {
               if (productos.length === 0) {
-                return this.http.post<ClMenuItem>(this.apiUrl, producto, this.httpOptions);
+                return this.http.post<ClProducto>(this.apiUrl, producto, this.httpOptions);
               } else {
                 console.log('Producto ya existe en la API.');
                 return of(productos[0]);
@@ -140,12 +136,12 @@ export class MesaAPIService {
   }
 
   // Actualizar producto (SQLite + API si está en línea)
-  updateMenuItem(id: number, item: ClMenuItem): Observable<ClMenuItem> {
+  updateMenuItem(id: number, item: ClProducto): Observable<ClProducto> {
     return new Observable(observer => {
       this.sqliteService.updateProducto(id, item.nombre, item.precio, item.cantidad).then(() => {
         console.log('Producto actualizado en SQLite');
         if (navigator.onLine) {
-          this.http.put<ClMenuItem>(`${this.apiUrl}/${id}`, item, this.httpOptions).pipe(
+          this.http.put<ClProducto>(`${this.apiUrl}/${id}`, item, this.httpOptions).pipe(
             tap(() => observer.next(item)),
             catchError(this.handleError('updateMenuItem', item))
           ).subscribe();
@@ -174,10 +170,10 @@ export class MesaAPIService {
   }
 
   // Obtener productos solo desde la API
-  getMenuItemsFromAPI(): Observable<ClMenuItem[]> {
-    return this.http.get<ClMenuItem[]>(this.apiUrl).pipe(
+  getMenuItemsFromAPI(): Observable<ClProducto[]> {
+    return this.http.get<ClProducto[]>(this.apiUrl).pipe(
       tap((productosAPI) => console.log('Productos obtenidos desde la API:', productosAPI)),
-      catchError(this.handleError<ClMenuItem[]>('getMenuItemsFromAPI', []))
+      catchError(this.handleError<ClProducto[]>('getMenuItemsFromAPI', []))
     );
   }
 }

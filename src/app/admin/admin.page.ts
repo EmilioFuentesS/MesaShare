@@ -1,8 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core'; 
 import { IonMenu } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { MesaAPIService, ClMenuItem } from '../services/ProductosAPI/mesa-api.service'; 
+import { MesaAPIService } from '../services/ProductosAPI/mesa-api.service'; 
 import { AlertController, LoadingController } from '@ionic/angular';
+import { ClProducto } from '../services/ProductosAPI/model/ClProducto';
 
 @Component({
   selector: 'app-admin',
@@ -11,11 +12,11 @@ import { AlertController, LoadingController } from '@ionic/angular';
 })
 export class AdminPage implements OnInit {
   @ViewChild(IonMenu) menu?: IonMenu;
-  productos: ClMenuItem[] = []; // Lista de productos
+  productos: ClProducto[] = []; // Lista de productos
   username: string | null = null;
 
-  productoSeleccionado: ClMenuItem | null = null;  // Para almacenar el producto seleccionado para edición
-  nuevoProducto: ClMenuItem = { id: 0, nombre: '', precio: 0, cantidad: 0 }; // Nuevo producto a agregar
+  productoSeleccionado: ClProducto | null = null;  // Para almacenar el producto seleccionado para edición
+  nuevoProducto: ClProducto = { id: 0, nombre: '', precio: 0, cantidad: 0, fecha: new Date() }; // Nuevo producto a agregar
 
   constructor(
     private router: Router, 
@@ -47,7 +48,7 @@ export class AdminPage implements OnInit {
   }
 
   // Método para seleccionar un producto para edición
-  onEditarProducto(producto: ClMenuItem) {
+  onEditarProducto(producto: ClProducto) {
     this.productoSeleccionado = { ...producto }; // Clonar el objeto para evitar modificar el original directamente
   }
 
@@ -114,7 +115,7 @@ export class AdminPage implements OnInit {
     this.mesaAPIService.addMenuItem(this.nuevoProducto).subscribe({
       next: async () => {
         console.log('Producto agregado');
-        this.nuevoProducto = { id: 0, nombre: '', precio: 0, cantidad: 0 }; // Limpiar el formulario
+        this.nuevoProducto = { id: 0, nombre: '', precio: 0, cantidad: 0,fecha: new Date() }; // Limpiar el formulario
         await loading.dismiss();
       },
       error: async (err) => {
