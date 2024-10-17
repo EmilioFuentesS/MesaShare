@@ -1,21 +1,5 @@
 {
   "productos": [],
-  "meseros": [
-    {
-      "id": 2,
-      "nombre": "oka",
-      "qrCode": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHQAAAB0CAYAAABUmhYnAAAAAXNSR0IArs4c6QAABLZJREFUeF7tnd2O8yoQBE/e/6HzSecuRHKp1WAHtvZ2+Bm6Zgawk+zr/X6///PvGAVeAj2G5f8LEehZPAV6GE+BCvQ0BQ5bj3uoQA9T4LDlmKECPUyBw5Zjhgr0MAUOW44ZKtDDFDhsOWaoQA9T4LDl1Bn6er1ulWR8fUvzt697afzZi6/9bd+HPr1gmr8W6OGATQPGDAXFKGBSwal9HYBm6LXEfx5oG2GjvKOgND61J0C0R9P8lIHt+mj86SX36QULtCRAAlJEkT0dn9qboeGhoYyPr9kIUFrCBFoCJQHH4ds9bHUAkH9Ucah/mxDL91CBfiIW6HCxpwg2Q0khS+6HApRhltxBARLs1+0CFehlBaAA+Trlz370RxlEDlL/X7fPXh+NJ9Dh25N0iErtBCANSBrveKB0r20fRBAQAkD9yzNq/2WlpyOY7rkkUOo/ARHo5EORGUoh/OP3UDP0E9DyR39UgsjelsR0z2zb03pWjy9Q+M0QCqgUoEDhWW4q+Or2KeDUHxrfDDVDh0344Y85UoTPtlOGtPbyjDr/HtouiPrTPXC1nfxr7QIt99g0g1tg1F+gAv2IkfpQRBG32k4ZRteE9MnS6vW04wsUHj22At/dX6ACvTvmruez5A7XyNWfWCD8BIQevtP47TWGxic7nVpp/TT+1xlBoJ+//9wGUHrIEmgYsmZoKFgbYdS/zRiBPgx0dcmiAFm951EAh/J/Na+vLa2Ddwt893z0YIMCKAUs0PAeOjuABToASAU2QyHnSaC0ZMxunx6KqESSfzRfekag+ZbfQ1MHVrcngankpQFL8wm0JE4CCxT2sFL/6d0FGkpKJYkETUsQzZeOl+6ZtJ4246k/4Zl+bSFBCQgtiPrT/CgIfOhNoPD1vRSAQK9D0gwNzwR/LkOpZKZ7VprBND4BoZKcro/Gm22fnqHpgu8uoQINnxQJdHbOZeOZoeFXOdKAzXD0rWugvQvdCG3JbvuT9zT+7AAR6OIMFSiFfHjNoFMyCU79yV0a3wwV6GUM1SWXIpAiOLWn1w7KAPKf+qf+py/k4/Fnfy43dSBtL9CHH/2lwKi9QAV6veeEb1co4Mi+Xcn99T2n3TMJSGpvT9Fj/+mHIoF+/nO/2VsEVoDZhyKBCjTa49qAseSWb1tIQNpD2j2JShQFyGz/W3+o//I9dLYg6Z5EAggUHr21glN/shNAqghfp8by4X0b0Ol6zNDwt/5I4DbgqGLQ/NsDbTOqzVgCSPZ0foGSAoOdMiQ9pAk0/DccZuinApZcM3SIiPDHE6kCUomikphmLI2XnlLT9VH71H5chgqUQvTHnxRRBFOG0fKpP80/+xRL85mhk++hJDgFEPUn+3Kg5ADZ6ZpA/VM7ZWS6x9/u/197fUaABRr+j2wSlA41y0tW+JEUykCyp3pQe0vuoJAZGr6NoAgjO+1h6amSAKbjpRVmdgZPz1AC0toFeq2gQMMKk+7hlIFkTxNAoAJNY8b2dypQZ+idzjoXKyBQ1mirFgLdChc7K1DWaKsWAt0KFzsrUNZoqxYC3QoXOytQ1mirFgLdChc7K1DWaKsWAt0KFzsrUNZoqxYC3QoXOytQ1mirFgLdChc7+w/ZFicONlnXYwAAAABJRU5ErkJggg==",
-      "texto": "oka",
-      "fecha": "2024-10-17T05:29:26.700Z"
-    }
-  ],
-  "users": [
-    {
-      "id": 1,
-      "username": "sys",
-      "email": "admin@mesashare.com",
-      "password": "sys",
-      "active": 0
-    }
-  ]
+  "meseros": [],
+  "users": []
 }
