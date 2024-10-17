@@ -4,9 +4,9 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { QrGeneratorPageRoutingModule } from './qr-generator-routing.module';
+import { QrGeneratorPageRoutingModule } from '../../meseros/mesero-addqr/qr-generator-routing.module';
 
-import { QrGeneratorPage } from './qr-generator.page';
+import { QrGeneratorPage } from '../mesero-addqr/qr-generator.page';
 
 @NgModule({
   imports: [

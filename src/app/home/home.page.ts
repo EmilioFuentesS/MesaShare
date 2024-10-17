@@ -1,6 +1,6 @@
 import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { AnimationController } from '@ionic/angular';
-import { SQLiteService } from '../services/sqlite/sqlite.service';
+import { SQLiteService } from '../services/SQLite/sqlite.service';
 
 
 @Component({
@@ -13,7 +13,7 @@ export class HomePage implements AfterViewInit {
 /*ANIMACION */ 
   @ViewChild('animatedImage', { read: ElementRef, static: true }) animatedImage!: ElementRef;
 
-  constructor(private animationCtrl: AnimationController,private sqliteService: SQLiteService ) {}
+  constructor(private animationCtrl: AnimationController,private sqliteService: SQLiteService) {}
   
   async ngOnInit() {
     // Llamamos al método initializeDB pasando el nombre de la base de datos y la clave de cifrado
@@ -36,5 +36,6 @@ export class HomePage implements AfterViewInit {
   
     imageAnimation.play();
   }
-  
+
+
 } 

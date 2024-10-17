@@ -2,12 +2,12 @@ import { Injectable } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
 import { CapacitorSQLite, SQLiteDBConnection, SQLiteConnection } from '@capacitor-community/sqlite';
 import { isPlatform } from '@ionic/angular';
-import { ClUser } from '../User/model/ClUser';
-import { QrService } from '../qr-generator/qr.service';
-import { MesaAPIService } from '../MesaAPI/mesa-api.service';
-import { UserService } from '../User/user.service';
+import { ClUser } from '../UsuariosAPI/model/ClUser';
+import { QrService } from '../GenerarQrAPI/qr.service';
+import { MesaAPIService } from '../ProductosAPI/mesa-api.service';
+import { UserService } from '../UsuariosAPI/user.service';
 import { firstValueFrom } from 'rxjs';
-import { ClMesero } from '../qr-generator/model/ClMesero';
+import { ClMesero } from '../GenerarQrAPI/model/ClMesero';
 
 @Injectable({
   providedIn: 'root'
@@ -34,6 +34,7 @@ export class SQLiteService {
       await this.initializeNativeDB(dbname, db_key);
     } 
   } 
+
   // Inicializar la base de datos nativa (iOS/Android)
   private async initializeNativeDB(dbname: string, db_key: string) {
     try {
@@ -45,6 +46,7 @@ export class SQLiteService {
 
         // Crear las tablas
         await this.createTables();
+        await this.createDefaultAdminUser(); // Crea el usuario administrador por defecto
       } else {
         this.db = await this.sqliteConnection.retrieveConnection(dbname, false);
         await this.db.open();
@@ -55,8 +57,6 @@ export class SQLiteService {
     }
   }
 
-
-
   // Verificar si la base de datos está lista
   private async ensureDBReady(): Promise<void> {
     if (this.native && !this.db) {
@@ -66,61 +66,69 @@ export class SQLiteService {
   }
 
   // Crear o recrear las tablas en SQLite (eliminar y luego crear)
-async createTables() {
-  await this.ensureDBReady();
-  if (this.db) {
-    try {
-      // Eliminar las tablas si ya existen
-      const sqlDropUsersTable = `DROP TABLE IF EXISTS users;`;
-      const sqlDropProductsTable = `DROP TABLE IF EXISTS productos;`;
-      const sqlDropMeserosTable = `DROP TABLE IF EXISTS meseros;`;
+  async createTables() {
+    await this.ensureDBReady();
+    if (this.db) {
+      try {
+        // Eliminar las tablas si ya existen
+        const sqlDropUsersTable = `DROP TABLE IF EXISTS users;`;
+        const sqlDropProductsTable = `DROP TABLE IF EXISTS productos;`;
+        const sqlDropMeserosTable = `DROP TABLE IF EXISTS meseros;`;
 
-      // Crear las tablas de nuevo
-      const sqlCreateUsersTable = `
-        CREATE TABLE IF NOT EXISTS users (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          username TEXT,
-          email TEXT,
-          password TEXT,
-          active INTEGER DEFAULT 0
-        );
-      `;
-      const sqlCreateProductsTable = `
-        CREATE TABLE IF NOT EXISTS productos (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          nombre TEXT,
-          precio REAL,
-          cantidad INTEGER,
-          fecha TEXT
-        );
-      `;
-      const sqlCreateMeserosTable = `
-        CREATE TABLE IF NOT EXISTS meseros (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          nombre TEXT,
-          qr_code TEXT,
-          texto TEXT,
-          fecha TEXT
-        );
-      `;
+        // Crear las tablas de nuevo
+        const sqlCreateUsersTable = `
+          CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT,
+            email TEXT,
+            password TEXT,
+            active INTEGER DEFAULT 0
+          );
+        `;
+        const sqlCreateProductsTable = `
+          CREATE TABLE IF NOT EXISTS productos (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nombre TEXT,
+            precio REAL,
+            cantidad INTEGER,
+            fecha TEXT
+          );
+        `;
+        const sqlCreateMeserosTable = `
+          CREATE TABLE IF NOT EXISTS meseros (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nombre TEXT,
+            qr_code TEXT,
+            texto TEXT,
+            fecha TEXT
+          );
+        `;
 
-      // Ejecutar las sentencias para eliminar y luego crear las tablas
-      await this.db.execute(sqlDropUsersTable);
-      await this.db.execute(sqlDropProductsTable);
-      await this.db.execute(sqlDropMeserosTable);
-      console.log('Tablas eliminadas correctamente si existían.');
+        // Ejecutar las sentencias para eliminar y luego crear las tablas
+        await this.db.execute(sqlDropUsersTable);
+        await this.db.execute(sqlDropProductsTable);
+        await this.db.execute(sqlDropMeserosTable);
+        console.log('Tablas eliminadas correctamente si existían.');
 
-      // Crear las nuevas tablas
-      await this.db.execute(sqlCreateUsersTable);
-      await this.db.execute(sqlCreateProductsTable);
-      await this.db.execute(sqlCreateMeserosTable);
-      console.log('Tablas users, productos y meseros creadas correctamente en SQLite');
-    } catch (error) {
-      console.error('Error al recrear las tablas en SQLite:', error);
+        // Crear las nuevas tablas
+        await this.db.execute(sqlCreateUsersTable);
+        await this.db.execute(sqlCreateProductsTable);
+        await this.db.execute(sqlCreateMeserosTable);
+        console.log('Tablas users, productos y meseros creadas correctamente en SQLite');
+      } catch (error) {
+        console.error('Error al recrear las tablas en SQLite:', error);
+      }
     }
   }
-}
 
+  // Crear el usuario administrador por defecto
+  async createDefaultAdminUser() {
+    const existingUser = await this.getUserByUsername('sys');
+    if (!existingUser) {
+      await this.registerUser('sys', 'admin@mesashare.com', 'sys'); 
+      console.log('Usuario administrador por defecto creado.');
+    }
+  }
 
   // Métodos para gestionar usuarios
   async registerUser(username: string, email: string, password: string) {
@@ -144,8 +152,10 @@ async createTables() {
         const query = `SELECT * FROM users WHERE username = ? AND password = ?`;
         const values = [username, password];
         const result = await this.db.query(query, values);
+        
+        // Verifica si result y result.values están definidos
         if (result && result.values && result.values.length > 0) {
-          return result.values[0];  // Return user object from SQLite
+          return result.values[0];  // Retorna el objeto del usuario desde SQLite
         } else {
           console.log('Usuario no encontrado');
           return null;
@@ -168,10 +178,24 @@ async createTables() {
       } catch (error) {
         console.error('Error al actualizar usuario en SQLite:', error);
       }
-    } else {
-      console.error('No hay conexión a la base de datos SQLite.');
     }
   }
+
+  async getUserByUsername(username: string): Promise<any> {
+    await this.ensureDBReady();
+    if (this.db) {
+      try {
+        const query = `SELECT * FROM users WHERE username = ?`;
+        const values = [username];
+        const result = await this.db.query(query, values);
+        return result.values && result.values.length > 0 ? result.values[0] : null;
+      } catch (error) {
+        console.error('Error al buscar el usuario en SQLite:', error);
+        return null;
+      }
+    }
+  }
+
 
   async getUsers(): Promise<any[]> {
     await this.ensureDBReady();

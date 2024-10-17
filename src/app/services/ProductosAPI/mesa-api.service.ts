@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of, BehaviorSubject, from, firstValueFrom } from 'rxjs';
 import { catchError, tap, switchMap } from 'rxjs/operators';
-import { SQLiteService } from '../sqlite/sqlite.service'; // Servicio SQLite
+import { SQLiteService } from '../SQLite/sqlite.service'; // Servicio SQLite
 
 export interface ClMenuItem {
   id: number;

@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { LoadingController, Platform } from '@ionic/angular';
-import { SQLiteService } from './services/sqlite/sqlite.service';
-import { UserService } from './services/User/user.service'; // Servicio para sincronizar usuarios
-import { MesaAPIService } from './services/MesaAPI/mesa-api.service'; // Servicio para sincronizar productos
-import { QrService } from './services/qr-generator/qr.service'; // Servicio para sincronizar meseros
+import { SQLiteService } from './services/SQLite/sqlite.service';
+import { UserService } from './services/UsuariosAPI/user.service'; // Servicio para sincronizar usuarios
+import { MesaAPIService } from './services/ProductosAPI/mesa-api.service'; // Servicio para sincronizar productos
+import { QrService } from './services/GenerarQrAPI/qr.service'; // Servicio para sincronizar meseros
 
 @Component({
   selector: 'app-root',

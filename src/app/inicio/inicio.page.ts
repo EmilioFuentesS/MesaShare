@@ -1,11 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { IonMenu } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { ClMenuItem, MesaAPIService } from '../services/MesaAPI/mesa-api.service'; // Asegúrate de usar la ruta correcta
-import { SQLiteService } from '../services/sqlite/sqlite.service';
-import { UserService } from '../services/User/user.service'; // Servicio de usuarios
+import { ClMenuItem, MesaAPIService } from '../services/ProductosAPI/mesa-api.service'; // Asegúrate de usar la ruta correcta
+import { SQLiteService } from '../services/SQLite/sqlite.service';
+import { UserService } from '../services/UsuariosAPI/user.service'; // Servicio de usuarios
 import { AlertController, LoadingController } from '@ionic/angular';
-import { ClProducto } from '../services/MesaAPI/model/ClProducto';
+import { ClProducto } from '../services/ProductosAPI/model/ClProducto';
 
 @Component({
   selector: 'app-inicio',
@@ -40,6 +40,9 @@ export class InicioPage implements OnInit {
     if (navigation?.extras.state) {
       this.username = (navigation.extras.state as { username?: string }).username || null;
     }
+
+    
+  
 
     // Cargar los items del menú desde SQLite
     this.cargarMenuItems();

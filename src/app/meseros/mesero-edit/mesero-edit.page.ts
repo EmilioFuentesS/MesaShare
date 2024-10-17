@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { QrService } from '../../services/qr-generator/qr.service';
-import { ClMesero } from '../../services/qr-generator/model/ClMesero';
-import { SQLiteService } from '../../services/sqlite/sqlite.service';
+import { ClMesero } from '../../services/GenerarQrAPI/model/ClMesero'; // Importar el modelo de mesero
+import { SQLiteService } from '../../services/SQLite/sqlite.service';
+import { QrService } from '../../services/GenerarQrAPI/qr.service'; // Importar el servicio
 
 @Component({
   selector: 'app-mesero-edit',

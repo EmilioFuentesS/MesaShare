@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { QrGeneratorPage } from './qr-generator.page';
+import { QrGeneratorPage } from '../mesero-addqr/qr-generator.page';
 
 const routes: Routes = [
   {

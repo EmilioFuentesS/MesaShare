@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { AlertController, LoadingController } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { ClMesero } from '../services/qr-generator/model/ClMesero'; // Importar el modelo de mesero
-import { SQLiteService } from '../services/sqlite/sqlite.service';
-import { QrService } from '../services/qr-generator/qr.service'; // Importar el servicio
+import { ClMesero } from '../services/GenerarQrAPI/model/ClMesero'; // Importar el modelo de mesero
+import { SQLiteService } from '../services/SQLite/sqlite.service';
+import { QrService } from '../services/GenerarQrAPI/qr.service'; // Importar el servicio
 import { Share } from '@capacitor/share'; // Capacitor Share
-import { Directory, Filesystem } from '@capacitor/filesystem';
+import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
 import jsPDF from 'jspdf';
 import * as QRCode from 'qrcode'; // Importar la librería qrcode
 
@@ -35,15 +35,14 @@ export class MeserosPage implements OnInit {
     this.loadMeseros(); // Recargar la lista de meseros cuando regrese a la vista
   }
 
-  // Método para cargar los meseros desde SQLite y sincronizar con la API si hay conexión
   async loadMeseros() {
     const loading = await this.loadingController.create({ message: 'Cargando meseros...' });
     await loading.present();
-
+  
     try {
       // Cargar meseros desde SQLite
       this.meseros = await this.sqliteService.getMeseros();
-
+  
       // Si hay conexión, sincronizar con la API
       if (navigator.onLine) {
         await this.qrService.syncMeserosConAPI(); // Sincronizar los cambios pendientes con la API
@@ -56,8 +55,9 @@ export class MeserosPage implements OnInit {
       await loading.dismiss();
     }
   }
+  
 
-  // Método para eliminar un mesero
+// Método para eliminar un mesero
 async deleteMesero(meseroId: number) {
   const alert = await this.alertController.create({
     header: 'Confirmar eliminación',
@@ -86,12 +86,13 @@ async deleteMesero(meseroId: number) {
             }
 
             // Recargar la lista de meseros después de la eliminación
-            await this.loadMeseros();
+            await this.loadMeseros(); // Asegúrate de que este método actualice la UI
             this.showAlert('Éxito', 'Mesero eliminado correctamente.');
           } catch (error) {
             console.error('Error al eliminar mesero:', error);
             this.showAlert('Error', 'No se pudo eliminar el mesero.');
           } finally {
+            // Asegúrate de que se disuelva el loading en todas las condiciones
             await loading.dismiss();
           }
         },
@@ -100,6 +101,8 @@ async deleteMesero(meseroId: number) {
   });
   await alert.present();
 }
+
+
 
   // Mostrar alerta
   async showAlert(header: string, message: string) {
@@ -149,23 +152,21 @@ async deleteMesero(meseroId: number) {
         pdf.addImage(qrImage, 'PNG', 10, 70, 50, 50); // Posición y tamaño de la imagen en el PDF
       }
   
-      // Generar el PDF como un Blob
-      const pdfBlob = pdf.output('blob');
+      // Convertir el PDF a base64 directamente usando jsPDF
+      const base64PDF = pdf.output('datauristring').split(',')[1]; // Obtener solo la parte base64
   
       // Guardar el archivo en el sistema de archivos del dispositivo
       const fileName = `Credencial_${meseroNombre}.pdf`;
-  
-      // Guardar el archivo PDF
       const savedFile = await Filesystem.writeFile({
         path: fileName,
-        data: await this.blobToBase64(pdfBlob), // Convertir Blob a base64
-        directory: Directory.Documents,
+        data: base64PDF,
+        directory: Directory.Documents, // Guardar en la carpeta de Documentos
       });
   
       console.log('Archivo PDF guardado:', savedFile.uri);
       alert('PDF descargado en la carpeta Documentos');
   
-      // Abrir el archivo automáticamente
+      // Abrir o compartir el archivo (si es necesario)
       await this.openFile(savedFile.uri);
   
     } catch (error) {
@@ -173,6 +174,7 @@ async deleteMesero(meseroId: number) {
       alert('Error al guardar el PDF.');
     }
   }
+  
   
   // Método para abrir el archivo PDF
   async openFile(fileUri: string) {

@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { BarcodeScanner, SupportedFormat } from '@capacitor-community/barcode-scanner';
 import { AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { QrService } from '../services/qr-generator/qr.service'; // Importar el servicio
-import { ClMesero } from '../services/qr-generator/model/ClMesero'; // Importar la clase Mesero
-import { SQLiteService } from '../services/sqlite/sqlite.service'; // Servicio SQLite
+import { QrService } from '../services/GenerarQrAPI/qr.service'; // Importar el servicio
+import { ClMesero } from '../services/GenerarQrAPI/model/ClMesero'; // Importar la clase Mesero
+import { SQLiteService } from '../services/SQLite/sqlite.service'; // Servicio SQLite
 
 @Component({
   selector: 'app-credencial-admin',
@@ -127,15 +127,16 @@ export class CredencialAdminPage implements OnInit {
   
 
   async validateLocalMesero(textoQR: string) {
+    console.log('Validando en SQLite el texto:', textoQR);
     try {
-      console.log('Validando en SQLite el texto:', textoQR);
       const mesero = await this.sqliteService.getMeseroByTexto(textoQR);
       if (mesero) {
+        console.log('Mesero encontrado en SQLite:', mesero);
         this.router.navigate(['/admin']);
         this.showWelcomeMessage(`Bienvenido Mesero: ${mesero.nombre}`);
       } else {
         console.log('Mesero no encontrado en SQLite, validando en la API...');
-        this.validateMeseroInAPI(textoQR);
+        this.validateMeseroInAPI(textoQR); // Validar en la API si no se encuentra en SQLite
       }
     } catch (error) {
       console.error('Error al validar el mesero en SQLite:', error);
@@ -143,27 +144,27 @@ export class CredencialAdminPage implements OnInit {
     }
   }
   
-
   // Validar mesero en la API si no se encuentra en SQLite
-async validateMeseroInAPI(textoQR: string) {
-  this.qrService.getMeseroByTexto(textoQR).subscribe(
-    async (mesero: ClMesero | undefined) => {
-      if (mesero) {
-        // Si el mesero se encuentra en la API, se inserta en SQLite
-        await this.sqliteService.addMesero(mesero.nombre, mesero.qrCode, mesero.texto);
-        this.router.navigate(['/admin']);
-        this.showWelcomeMessage(`Bienvenido Mesero: ${mesero.nombre}`);
-      } else {
-        this.showErrorMessage('El código QR no es válido.');
+  async validateMeseroInAPI(textoQR: string) {
+    this.qrService.getMeseroByTexto(textoQR).subscribe(
+      async (mesero: ClMesero | undefined) => {
+        if (mesero) {
+          console.log('Mesero encontrado en API:', mesero);
+          // Si el mesero se encuentra en la API, guardarlo en SQLite
+          await this.sqliteService.addMesero(mesero.nombre, mesero.qrCode, mesero.texto);
+          this.router.navigate(['/admin']); // Redirigir a admin
+          this.showWelcomeMessage(`Bienvenido Mesero: ${mesero.nombre}`);
+        } else {
+          this.showErrorMessage('El código QR no es válido.');
+        }
+      },
+      (error) => {
+        console.error('Error al obtener el mesero desde la API:', error);
+        this.showErrorMessage('Ocurrió un error durante la validación del QR en la API.');
       }
-    },
-    (error) => {
-      console.error('Error al obtener el mesero desde la API:', error);
-      this.showErrorMessage('Ocurrió un error durante la validación del QR.');
-    }
-  );
-}
-
+    );
+  }
+  
   // Método para preparar el escaneo
   prepareScan() {
     BarcodeScanner.prepare();

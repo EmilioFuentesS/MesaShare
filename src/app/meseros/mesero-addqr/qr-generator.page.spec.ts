@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { QrGeneratorPage } from './qr-generator.page';
+import { QrGeneratorPage } from '../mesero-addqr/qr-generator.page';
 
 describe('QrGeneratorPage', () => {
   let component: QrGeneratorPage;

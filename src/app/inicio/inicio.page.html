@@ -1,11 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>Inicio</ion-title>
-    <!-- Mostrar el nombre de usuario si está disponible -->
-    <ion-label *ngIf="username" class="welcome-label">
-      <img src="/assets/imgs/usuario.png" alt="User Icon" class="user-icon">
-      Bienvenido, {{ username }}
-    </ion-label>
     <!-- Menú desplegable en la parte superior derecha -->
     <ion-buttons slot="end">
       <ion-menu-button></ion-menu-button>
@@ -37,12 +32,18 @@
           Home
         </ion-button>
       </ion-item>
+
       <!-- Botón de Logout -->
       <ion-item>
         <ion-button class="home-button" expand="full" (click)="logout()">
           <ion-icon name="log-out-outline" slot="start"></ion-icon>
           Cerrar sesión
         </ion-button>
+      </ion-item>
+      <ion-item> 
+        <button mat-raised-button color="primary" class="staff-button" [routerLink]="['/credencial-admin']">
+      QR Mesero
+    </button> 
       </ion-item>
     </ion-list>
   </ion-content>
@@ -54,6 +55,11 @@
       <ion-title size="large">Dividir cuenta</ion-title>
     </ion-toolbar>
   </ion-header>
+
+  <!-- Mostrar el nombre del usuario -->
+  <div class="ion-padding">
+    <ion-label>Bienvenido</ion-label> <!-- Label que muestra el nombre de usuario -->
+  </div>
 
   <!-- Selección de número de personas con botones + y - -->
   <div class="personas-container ion-padding">

@@ -3,9 +3,9 @@ import * as QRCode from 'qrcode';
 import jsPDF from 'jspdf';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem'; // Importar Capacitor Filesystem
 import { Share } from '@capacitor/share'; // Importar Capacitor Share
-import { QrService } from './qr.service'; // Importar el servicio QrService
-import { ClMesero } from './model/ClMesero'; // Importar el modelo de ClMesero
-import { SQLiteService } from '../sqlite/sqlite.service';
+import { QrService } from '../../services/GenerarQrAPI/qr.service'; // Importar el servicio QrService
+import { ClMesero } from '../../services/GenerarQrAPI/model/ClMesero'; 
+import { SQLiteService } from '../../services/SQLite/sqlite.service';
 
 @Component({
   selector: 'app-qr-generator',
@@ -63,9 +63,9 @@ export class QrGeneratorPage {
       // Crear un nuevo documento PDF
       const pdf = new jsPDF();
   
-      // Añadir un recuadro y el texto "Credencial de Administrador"
+      // Añadir un recuadro y el texto "Credencial de Mesero"
       pdf.setFontSize(18);
-      pdf.text('CREDENCIAL DE ADMINISTRADOR', 10, 20);
+      pdf.text('CREDENCIAL DE MESERO', 10, 20);
   
       // Añadir el nombre del mesero
       pdf.setFontSize(14);
@@ -84,14 +84,15 @@ export class QrGeneratorPage {
       // Generar el PDF como un Blob
       const pdfBlob = pdf.output('blob');
   
+      // Convertir el Blob a base64
+      const base64PDF = await this.blobToBase64(pdfBlob);
+  
       // Guardar el archivo en el sistema de archivos del dispositivo
       const fileName = `Credencial_${meseroNombre}.pdf`;
-      
-      // Usar Filesystem para guardar el archivo
       const savedFile = await Filesystem.writeFile({
         path: fileName,
-        data: await this.blobToBase64(pdfBlob), // Convertir el Blob a base64
-        directory: Directory.Documents,
+        data: base64PDF, // Guardar el PDF como base64
+        directory: Directory.Documents, // Guardar en la carpeta Documentos
       });
   
       console.log('Archivo PDF guardado:', savedFile.uri);

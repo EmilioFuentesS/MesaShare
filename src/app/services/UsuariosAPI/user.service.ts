@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of, BehaviorSubject, throwError, lastValueFrom } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { ClUser } from './model/ClUser'; // Modelo de usuario
-import { SQLiteService } from '../sqlite/sqlite.service'; // Servicio SQLite
+import { SQLiteService } from '../SQLite/sqlite.service'; // Servicio SQLite
 
 @Injectable({
   providedIn: 'root'
@@ -11,14 +11,12 @@ import { SQLiteService } from '../sqlite/sqlite.service'; // Servicio SQLite
 export class UserService {
   private apiUrl = 'http://192.168.182.190:3000/users'; // URL del JSON-server para los usuarios
   private httpOptions = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
-
   private usersSubject = new BehaviorSubject<ClUser[]>([]); // BehaviorSubject para los usuarios
 
   constructor(private http: HttpClient, private sqliteService: SQLiteService) {
     this.loadUsersFromSQLite(); // Cargar los usuarios desde SQLite al iniciar
   }
 
-  // Manejo de errores
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
       console.error(`Error en ${operation}:`, error);
@@ -26,17 +24,14 @@ export class UserService {
     };
   }
 
-  // Observable para usuarios
   getUsersObservable(): Observable<ClUser[]> {
     return this.usersSubject.asObservable();
   }
 
-  // Cargar todos los usuarios desde SQLite y sincronizar con la API si hay conexión
   loadUsersFromSQLite(): void {
     this.sqliteService.getUsers().then(async (users) => {
       this.usersSubject.next(users); // Mostrar los usuarios obtenidos desde SQLite
 
-      // Intentar sincronizar con la API si hay conexión
       if (navigator.onLine) {
         for (const user of users) {
           await this.syncUserWithAPI(user); // Sincronizar usuario con la API
@@ -49,18 +44,16 @@ export class UserService {
     });
   }
 
-  // Sincronizar un usuario con la API
   public async syncUserWithAPI(user: ClUser): Promise<void> {
     const exists = await this.userExistsInAPI(user.username);
     if (!exists) {
       this.http.post<ClUser>(this.apiUrl, user, this.httpOptions).pipe(
         tap(() => console.log(`Usuario sincronizado con la API: ${user.username}`)),
         catchError(this.handleError<ClUser>('syncUserWithAPI'))
-      ).subscribe() 
+      ).subscribe();
     }
   }
 
-  // Verificar si un usuario existe en la API
   private async userExistsInAPI(username: string): Promise<boolean> {
     try {
       const users = await lastValueFrom(this.http.get<ClUser[]>(`${this.apiUrl}?username=${username}`, this.httpOptions)
@@ -79,7 +72,6 @@ export class UserService {
     }
   }
 
-  // Registrar un nuevo usuario primero en SQLite y luego en la API
   registerUser(user: ClUser): Observable<ClUser> {
     return new Observable(observer => {
       this.sqliteService.registerUser(user.username, user.email, user.password).then(async () => {
@@ -93,7 +85,7 @@ export class UserService {
       });
     });
   }
-
+  
   // Cerrar sesión en SQLite
   async logoutUser(): Promise<void> {
     try {

@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core'; 
 import { IonMenu } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { MesaAPIService, ClMenuItem } from '../services/MesaAPI/mesa-api.service'; 
+import { MesaAPIService, ClMenuItem } from '../services/ProductosAPI/mesa-api.service'; 
 import { AlertController, LoadingController } from '@ionic/angular';
 
 @Component({

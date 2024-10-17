@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { SQLiteService } from '../services/sqlite/sqlite.service'; // Importa el servicio SQLite
+import { SQLiteService } from '../services/SQLite/sqlite.service'; // Importa el servicio SQLite
 import { ToastController, AlertController } from '@ionic/angular'; // Importa Toast y AlertController
 
 @Component({
@@ -16,70 +16,55 @@ export class LoginPage implements OnInit {
   constructor(
     private fb: FormBuilder, 
     private router: Router, 
-    private sqliteService: SQLiteService, // Inyecta el servicio
+    private sqliteService: SQLiteService, // Inyecta el servicio SQLite
     private alertController: AlertController, // Inyecta el AlertController
     private toastController: ToastController // Inyecta el ToastController
   ) {
-    
     // Inicializamos el formulario
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required]
     });
   }
+
   ngOnInit(): void {
-    throw new Error('Method not implemented.');
+    // Puedes realizar cualquier inicialización aquí
   }
- 
 
   // Método para validar los campos
-  validateModel(model: any): boolean {
-    for (var [key, value] of Object.entries(model)) {
-      if (value === "") {
-        this.field = key;
-        return false;
-      }
+  validateModel(): boolean {
+    if (this.loginForm.valid) {
+      return true;
+    } else {
+      const invalidField = Object.keys(this.loginForm.controls).find(key => this.loginForm.controls[key].invalid);
+      this.field = invalidField || "Campo desconocido";
+      return false;
     }
-    return true;
   }
 
   async onLogin() {
     const { username, password } = this.loginForm.value;
-  
-    if (this.validateModel(this.loginForm.value)) {
+
+    if (this.validateModel()) {
       try {
         const user = await this.sqliteService.loginUser(username, password);
         if (user) {
-          // Usuario encontrado, redirigir a la página de inicio
-          this.router.navigate(['/inicio'], { state: { username } });
+          // Redirigir dependiendo del tipo de usuario
+          if (user.username === 'sys') {
+            this.router.navigate(['/admin'], { state: { username } });
+          } else {
+            this.router.navigate(['/inicio'], { state: { username } });
+          }
           this.presentToast('Bienvenido ' + username);
         } else {
-          this.presentAlertConfirm();
+          this.presentToast('Usuario o contraseña incorrectos.');
         }
       } catch (error) {
         console.error('Error al iniciar sesión:', error);
         this.showAlert('Error', 'Ocurrió un error durante el inicio de sesión.');
       }
     } else {
-      this.presentToast('Falta: ' + this.field);
-    }
-  }
-
-  // Método para registrar un nuevo usuario
-  async registerUser() {
-    const { username, password } = this.loginForm.value;
-
-    if (this.validateModel(this.loginForm.value)) {
-      try {
-        await this.sqliteService.registerUser(username, username + '@default.com', password);
-        this.presentToast('Usuario registrado exitosamente');
-        this.router.navigate(['/inicio'], { state: { username } });
-      } catch (error) {
-        console.error('Error al registrar usuario:', error);
-        this.presentToast('El usuario ya existe o ocurrió un error al registrarse.');
-      }
-    } else {
-      this.presentToast('Falta: ' + this.field);
+      this.presentToast('Falta completar: ' + this.field);
     }
   }
 
@@ -102,30 +87,8 @@ export class LoginPage implements OnInit {
     await alert.present();
   }
 
-  // Método para confirmar registro si el usuario no existe
-  async presentAlertConfirm() {
-    const alert = await this.alertController.create({
-      header: 'Usuario no encontrado',
-      message: '¿Deseas registrarte con este usuario?',
-      buttons: [
-        {
-          text: 'NO',
-          role: 'cancel'
-        },
-        {
-          text: 'SI',
-          handler: () => {
-            this.registerUser();
-          }
-        }
-      ]
-    });
-    await alert.present();
-  }
-
   // Función parte del ciclo de vida de un componente
   ionViewWillEnter() {
     console.log('ionViewWillEnter');
-    // Puedes agregar cualquier funcionalidad adicional aquí
   }
 }

@@ -4,7 +4,7 @@ import { LoadingController, AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { ClProducto } from '../model/ClProducto';
 import { MesaAPIService } from '../mesa-api.service'; // Servicio para manejar API
-import { SQLiteService } from '../../sqlite/sqlite.service'; // Servicio para SQLite
+import { SQLiteService } from '../../SQLite/sqlite.service'; // Servicio para SQLite
 
 @Component({
   selector: 'app-menu-add',

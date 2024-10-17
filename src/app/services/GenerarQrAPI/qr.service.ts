@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of, from, BehaviorSubject } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { ClMesero } from './model/ClMesero'; // Modelo de Mesero
-import { SQLiteService } from '../sqlite/sqlite.service'; // Servicio SQLite
+import { SQLiteService } from '../SQLite/sqlite.service'; // Servicio SQLite
 
 @Injectable({
   providedIn: 'root'
@@ -115,26 +115,30 @@ export class QrService {
     });
   }
 
-// Eliminar mesero de SQLite y API (si está en línea)
-deleteMesero(id: number): Observable<void> {
-  return new Observable(observer => {
-    this.sqliteService.deleteMesero(id).then(() => {
-      console.log(`Mesero eliminado de SQLite con ID: ${id}`);
-      if (navigator.onLine) {
-        this.http.delete<void>(`${this.apiUrl}/${id}`, this.httpOptions).pipe(
-          tap(() => {
-            console.log(`Mesero eliminado en la API con ID: ${id}`);
-            observer.next();
-          }),
-          catchError(this.handleError<void>('deleteMesero'))
-        ).subscribe();
-      } else {
-        this.operacionesPendientes.push({ tipo: 'DELETE', id });
-        observer.next(); // Asegúrate de resolver el observable también si no hay conexión
-      }
-    }).catch(err => observer.error(err));
-  });
-}
+  deleteMesero(id: number): Observable<void> {
+    return new Observable(observer => {
+      this.sqliteService.deleteMesero(id).then(() => {
+        console.log(`Mesero eliminado de SQLite con ID: ${id}`);
+        if (navigator.onLine) {
+          this.http.delete<void>(`${this.apiUrl}/${id}`, this.httpOptions).pipe(
+            tap(() => {
+              console.log(`Mesero eliminado en la API con ID: ${id}`);
+              observer.next();
+            }),
+            catchError((error) => {
+              console.error('Error al eliminar mesero de la API:', error);
+              observer.error(error); // Propagar el error al observador
+              return of(); // Asegúrate de devolver un observable vacío
+            })
+          ).subscribe();
+        } else {
+          this.operacionesPendientes.push({ tipo: 'DELETE', id });
+          observer.next(); // Asegúrate de resolver el observable también si no hay conexión
+        }
+      }).catch(err => observer.error(err));
+    });
+  }
+  
 
 
   // Sincronizar las operaciones CRUD con la API cuando haya conexión
