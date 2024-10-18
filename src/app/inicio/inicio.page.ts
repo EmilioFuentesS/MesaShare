@@ -35,11 +35,17 @@ export class InicioPage implements OnInit {
   async ngOnInit() {
     // Inicializar la base de datos
     await this.sqliteService.initializeDB('my_database', 'mi_clave_secreta');
+      
+    // Obtener el nombre del usuario desde SQLite (el usuario activo)
+  const user = await this.sqliteService.getActiveUser();
+  if (user && user.username) {
+    this.username = user.username; // Interpolation to greet the user
+  } else {
+    // Si no se encuentra el usuario, redirigir al login
+    this.router.navigate(['/login']);
+  }
+      
     
-    const navigation = this.router.getCurrentNavigation();
-    if (navigation?.extras.state) {
-      this.username = (navigation.extras.state as { username?: string }).username || null;
-    }
 
     
   
@@ -89,6 +95,7 @@ export class InicioPage implements OnInit {
       await loading.dismiss();
     }
   }
+
 
 // Duplicar los productos por cantidad, generando IDs numéricos únicos
 duplicarProductosPorCantidad(productos: ClProducto[]): ClProducto[] {

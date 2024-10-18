@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core'; 
+import { Injectable } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
 import { CapacitorSQLite, SQLiteDBConnection, SQLiteConnection } from '@capacitor-community/sqlite';
 import { isPlatform } from '@ionic/angular';
@@ -8,6 +8,7 @@ import { MesaAPIService } from '../ProductosAPI/mesa-api.service';
 import { UserService } from '../UsuariosAPI/user.service';
 import { firstValueFrom } from 'rxjs';
 import { ClMesero } from '../GenerarQrAPI/model/ClMesero';
+import { Storage } from '@ionic/storage-angular';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,7 @@ export class SQLiteService {
   private db: SQLiteDBConnection | null = null;
   private platform: string;
   private native: boolean = false;
+  private storage: Storage | null = null; // Initialize the storage
 
   constructor() {
     this.platform = Capacitor.getPlatform();
@@ -32,8 +34,10 @@ export class SQLiteService {
   async initializeDB(dbname: string, db_key: string) {
     if (this.native) {
       await this.initializeNativeDB(dbname, db_key);
-    } 
-  } 
+    }
+  }
+
+  //  CREACIÓN DE BASE DE DATOS Y INICIALIZACIÓN, TABLAS  //
 
   // Inicializar la base de datos nativa (iOS/Android)
   private async initializeNativeDB(dbname: string, db_key: string) {
@@ -125,111 +129,111 @@ export class SQLiteService {
   async createDefaultAdminUser() {
     const existingUser = await this.getUserByUsername('sys');
     if (!existingUser) {
-      await this.registerUser('sys', 'admin@mesashare.com', 'sys'); 
+      await this.registerUser('sys', 'admin@mesashare.com', 'sys');
       console.log('Usuario administrador por defecto creado.');
     }
   }
 
-  // Métodos para gestionar usuarios
-  async registerUser(username: string, email: string, password: string) {
-    await this.ensureDBReady();
-    if (this.db) {
-      try {
-        const query = `INSERT INTO users (username, email, password) VALUES (?, ?, ?);`;
-        const values = [username, email, password];
-        await this.db.run(query, values);
-        console.log('Usuario registrado en SQLite');
-      } catch (error) {
-        console.error('Error al registrar usuario en SQLite:', error);
-      }
-    }
+
+//  MANEJO DE USUARIOS Y AUTENTICACIÓN //
+async registerUser(username: string, email: string, password: string): Promise<any> {
+  
+  const queryCheck = `SELECT * FROM users WHERE username = ?`;
+  const checkResult = await this.db?.query(queryCheck, [username]);
+
+  
+  if (checkResult && checkResult.values && checkResult.values.length > 0) {
+    console.log('Usuario ya existe en SQLite');
+    return null; 
   }
 
+ 
+  const queryInsert = `INSERT INTO users (username, email, password, active) VALUES (?, ?, ?, ?)`;
+  const values = [username, email, password, 0];
+  await this.db?.run(queryInsert, values);
+
+  
+  const queryNewUser = `SELECT * FROM users WHERE username = ?`;
+  const result = await this.db?.query(queryNewUser, [username]);
+
+  if (result && result.values && result.values.length > 0) {
+    console.log('Usuario registrado en SQLite:', result.values[0]);
+    return result.values[0]; 
+  } else {
+    console.error('Error al registrar el usuario en SQLite');
+    return null;
+  }
+}
+
+  // Login
   async loginUser(username: string, password: string): Promise<any> {
-    await this.ensureDBReady();
-    if (this.db) {
-      try {
-        const query = `SELECT * FROM users WHERE username = ? AND password = ?`;
-        const values = [username, password];
-        const result = await this.db.query(query, values);
-        
-        // Verifica si result y result.values están definidos
-        if (result && result.values && result.values.length > 0) {
-          return result.values[0];  // Retorna el objeto del usuario desde SQLite
-        } else {
-          console.log('Usuario no encontrado');
-          return null;
-        }
-      } catch (error) {
-        console.error('Error al iniciar sesión en SQLite:', error);
-        return null;
-      }
+    const query = `SELECT * FROM users WHERE username = ? AND password = ?`;
+    const result = await this.db?.query(query, [username, password]);
+
+    if (result && result.values && result.values.length > 0) {
+      const user = result.values[0];
+
+      
+      const updateQuery = `UPDATE users SET active = 1 WHERE id = ?`;
+      await this.db?.run(updateQuery, [user.id]);
+
+      return user; 
+    } else {
+      console.log('Usuario no encontrado');
+      return null;
     }
   }
 
+  // Cerrar sesión
+  async logoutUser(): Promise<void> {
+    const query = `UPDATE users SET active = 0 WHERE active = 1`; // Deactivate all active users
+    await this.db?.run(query);
+    console.log('Sesión cerrada');
+  }
+
+  // Obtiene la sesion
+  async getActiveUser(): Promise<any> {
+    const query = `SELECT * FROM users WHERE active = 1`; // Check for any active users
+    const result = await this.db?.query(query);
+    return result?.values?.[0] || null; // Return the active user or null if none found
+  }
+
+// Recuperar usuario por nombre de usuario
+async getUserByUsername(username: string): Promise<any> {
+  const query = `SELECT * FROM users WHERE username = ?`;
+  const result = await this.db?.query(query, [username]);
+
+  if (result && result.values && result.values.length > 0) {
+    return result.values[0]; // Retorna el usuario si lo encuentra
+  } else {
+    return null; // Retorna null si no encuentra el usuario
+  }
+}
+
+  // Edita
   async updateSesionData(user: ClUser): Promise<void> {
-    await this.ensureDBReady();
-    if (this.db) {
-      try {
-        const query = `UPDATE users SET username = ?, email = ?, password = ?, active = ? WHERE id = ?`;
-        const values = [user.username, user.email, user.password, user.active, user.id];
-        await this.db.run(query, values);
-        console.log('Usuario actualizado en SQLite');
-      } catch (error) {
-        console.error('Error al actualizar usuario en SQLite:', error);
-      }
-    }
+    const query = `UPDATE users SET active = ?, username = ?, email = ? WHERE id = ?`;
+    const values = [user.active, user.username, user.email, user.id];
+    await this.db?.run(query, values);
+    console.log('Usuario actualizado en SQLite.');
   }
 
-  async getUserByUsername(username: string): Promise<any> {
-    await this.ensureDBReady();
-    if (this.db) {
-      try {
-        const query = `SELECT * FROM users WHERE username = ?`;
-        const values = [username];
-        const result = await this.db.query(query, values);
-        return result.values && result.values.length > 0 ? result.values[0] : null;
-      } catch (error) {
-        console.error('Error al buscar el usuario en SQLite:', error);
-        return null;
-      }
-    }
-  }
-
-
+  // Busca usuarios
   async getUsers(): Promise<any[]> {
-    await this.ensureDBReady();
-    if (this.db) {
-      try {
-        const query = `SELECT * FROM users`;
-        const result = await this.db.query(query);
-        if (result && result.values) {
-          return result.values;
-        }
-        return [];
-      } catch (error) {
-        console.error('Error al obtener usuarios en SQLite:', error);
-        return [];
-      }
-    }
-    return [];
+    const query = `SELECT * FROM users`;
+    const result = await this.db?.query(query);
+    return result?.values || [];
   }
 
+  // Elimina
   async deleteUser(id: number) {
-    await this.ensureDBReady();
-    if (this.db) {
-      try {
-        const query = `DELETE FROM users WHERE id = ?`;
-        const values = [id];
-        await this.db.run(query, values);
-        console.log('Usuario eliminado de SQLite');
-      } catch (error) {
-        console.error('Error al eliminar usuario en SQLite:', error);
-      }
-    }
+    const query = `DELETE FROM users WHERE id = ?`;
+    const values = [id];
+    await this.db?.run(query, values);
+    console.log('Usuario eliminado de SQLite');
   }
 
-  // Sincronizar usuarios con la API
+  // Sincroniza con api
   async syncUsersWithAPI(userService: UserService): Promise<void> {
     const users = await this.getUsers();
     if (navigator.onLine) {
@@ -246,18 +250,8 @@ export class SQLiteService {
     }
   }
 
-  async logoutUser(): Promise<void> {
-    await this.ensureDBReady();
-    if (this.db) {
-      try {
-        const query = `UPDATE users SET active = 0 WHERE active = 1`; // Set all active users to inactive
-        await this.db.run(query);
-        console.log('Sesión cerrada en SQLite');
-      } catch (error) {
-        console.error('Error al cerrar sesión en SQLite:', error);
-      }
-    }
-  }
+
+ //  CRUD DE PRODUCTOS, MANEJO DE SINCRONIZACIÓN CON APIS  //
 
 
 // Método para agregar un producto a SQLite si no existe
@@ -417,6 +411,8 @@ async getProductoById(id: number): Promise<any> {
   }
 }
 
+
+//  CRUD DE MESEROS, MANEJO DE SINCRONIZACIÓN CON APIS  //
 
 
 // Método para agregar un mesero a SQLite si no existe
@@ -615,5 +611,4 @@ async getMeseroByNombre(nombre: string): Promise<ClMesero | null> {
   return null;
 }
 
-  
-  }
+}

@@ -18,43 +18,30 @@
     </ion-toolbar>
   </ion-header>
 
+  <!-- Formulario de recuperación de contraseña -->
   <form [formGroup]="recuperarForm" (ngSubmit)="onSubmit()">
     <ion-item>
-      <ion-label position="floating">Correo Electrónico</ion-label>
-      <ion-input formControlName="email" type="email"></ion-input>
+      <ion-label position="floating">Nombre de Usuario</ion-label>
+      <ion-input formControlName="username" type="text"></ion-input>
     </ion-item>
 
     <!-- Mensajes de error -->
-    <ion-note *ngIf="recuperarForm.get('email')?.hasError('required')" color="danger">
-      El correo electrónico es obligatorio.
-    </ion-note>
-    <ion-note *ngIf="recuperarForm.get('email')?.hasError('email')" color="danger">
-      Por favor, introduce un correo electrónico válido.
+    <ion-note *ngIf="recuperarForm.get('username')?.hasError('required')" color="danger">
+      El nombre de usuario es obligatorio.
     </ion-note>
 
     <!-- Botón para enviar el formulario -->
-    <ion-button class="recuperar" expand="full" type="submit" [disabled]="!recuperarForm.valid" id="open-modal">
-      Enviar Enlace de Recuperación
+    <ion-button class="recuperar" expand="full" type="submit" [disabled]="!recuperarForm.valid">
+      Enviar Solicitud de Recuperación
     </ion-button>
   </form>
 
-  <!-- Modal -->
-  <ion-modal #modal trigger="open-modal" [canDismiss]="true" [presentingElement]="presentingElement">
-    <ng-template>
-      <ion-header>
-        <ion-toolbar>
-          <ion-title>Recuperación</ion-title>
-          <ion-buttons slot="end">
-            <ion-button (click)="modal.dismiss()">Cerrar</ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
-
-      <ion-content class="ion-padding">
-        <p>Se ha enviado tu nueva contraseña al correo.</p>
-        <ion-button (click)="modal.dismiss()" expand="block" routerLink="/inicio">Continua como invitado</ion-button>
-        <ion-button (click)="modal.dismiss()" expand="block" color="secondary" routerLink="/login">Iniciar Sesión</ion-button>
-      </ion-content>
-    </ng-template>
-  </ion-modal>
+  <!-- Mostrar la contraseña recuperada en un mensaje -->
+  <ion-item *ngIf="recoveredPassword">
+    <ion-label color="primary">Contraseña recuperada:</ion-label>
+    <ion-text>{{ recoveredPassword }}</ion-text>
+    <ion-button fill="clear" color="primary" (click)="copyToClipboard()">
+      Copiar
+    </ion-button>
+  </ion-item>
 </ion-content>

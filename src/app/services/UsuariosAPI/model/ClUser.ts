@@ -6,7 +6,7 @@ export class ClUser {
     email: string;
     password: string;
     active: number;
-    fechaRegistro: Date;
+  
 
     constructor(obj: any) {
         if (obj && obj.id) {
@@ -19,6 +19,6 @@ export class ClUser {
         this.email = obj && obj.email || null;
         this.password = obj && obj.password || null;
         this.active = obj && obj.active !== undefined ? obj.active : 0; // No activo por defecto
-        this.fechaRegistro = obj && obj.fechaRegistro || new Date();
+       
     }
 }

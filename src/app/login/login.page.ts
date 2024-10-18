@@ -28,7 +28,20 @@ export class LoginPage implements OnInit {
   }
 
   ngOnInit(): void {
-    // Puedes realizar cualquier inicialización aquí
+    const navigation = this.router.getCurrentNavigation();
+    if (navigation?.extras.state) {
+      const { username, password } = navigation.extras.state as { username: string, password: string };
+      if (username && password) {
+        this.loginForm.patchValue({ username, password });
+      }
+    }
+    
+
+    this.sqliteService.initializeDB('my_database', 'my_db_key').then(() => {
+      console.log('Database initialized');
+    }).catch(error => {
+      console.error('Error initializing database:', error);
+    });
   }
 
   // Método para validar los campos
@@ -43,31 +56,29 @@ export class LoginPage implements OnInit {
   }
 
   async onLogin() {
-    const { username, password } = this.loginForm.value;
-
     if (this.validateModel()) {
       try {
+        
+        await this.sqliteService.initializeDB('my_database', 'my_db_key');
+  
+        const { username, password } = this.loginForm.value;
         const user = await this.sqliteService.loginUser(username, password);
+        
         if (user) {
-          // Redirigir dependiendo del tipo de usuario
-          if (user.username === 'sys') {
-            this.router.navigate(['/admin'], { state: { username } });
-          } else {
-            this.router.navigate(['/inicio'], { state: { username } });
-          }
-          this.presentToast('Bienvenido ' + username);
+          await this.router.navigate(['/inicio']);
+          await this.presentToast('Bienvenido ' + username);
         } else {
           this.presentToast('Usuario o contraseña incorrectos.');
         }
       } catch (error) {
-        console.error('Error al iniciar sesión:', error);
-        this.showAlert('Error', 'Ocurrió un error durante el inicio de sesión.');
+        console.error('Error during login:', error);
+        this.presentToast('Error durante el inicio de sesión.');
       }
     } else {
-      this.presentToast('Falta completar: ' + this.field);
+      this.presentToast('Por favor completa todos los campos.');
     }
   }
-
+  
   // Método para mostrar un toast
   async presentToast(message: string, duration: number = 2000) {
     const toast = await this.toastController.create({

@@ -43,48 +43,44 @@ export class UserService {
       console.error('Error al obtener usuarios de SQLite:', error);
     });
   }
+ 
 
-  public async syncUserWithAPI(user: ClUser): Promise<void> {
-    const exists = await this.userExistsInAPI(user.username);
-    if (!exists) {
-      this.http.post<ClUser>(this.apiUrl, user, this.httpOptions).pipe(
-        tap(() => console.log(`Usuario sincronizado con la API: ${user.username}`)),
-        catchError(this.handleError<ClUser>('syncUserWithAPI'))
-      ).subscribe();
-    }
-  }
+ syncUserWithAPI(user: ClUser): Observable<ClUser> {
+  return this.http.post<ClUser>(this.apiUrl, user).pipe(
+    tap(() => console.log(`Usuario sincronizado con la API: ${user.username}`)),
+    catchError(error => {
+      console.error('Error syncing user with API:', error);
+      return of(user);
+    })
+  );
+}
 
-  private async userExistsInAPI(username: string): Promise<boolean> {
-    try {
-      const users = await lastValueFrom(this.http.get<ClUser[]>(`${this.apiUrl}?username=${username}`, this.httpOptions)
-        .pipe(
-          map(users => users.length > 0),
-          catchError((error) => {
-            console.error('Error al verificar si el usuario existe en la API:', error);
-            return of(false);
-          })
-        )
-      );
-      return users;
-    } catch (error) {
-      console.error('Error en la verificación de existencia del usuario en la API:', error);
-      return false;
-    }
-  }
 
-  registerUser(user: ClUser): Observable<ClUser> {
-    return new Observable(observer => {
-      this.sqliteService.registerUser(user.username, user.email, user.password).then(async () => {
-        console.log('Usuario registrado en SQLite:', user);
-        await this.syncUserWithAPI(user); // Sincronizar con la API si está disponible
-        observer.next(user);
-        observer.complete();
-      }).catch((error) => {
-        console.error('Error al registrar usuario en SQLite:', error);
-        observer.error(error);
-      });
+
+// Registra en SQLite y sync con API
+registerUser(user: ClUser): Observable<ClUser> {
+  return new Observable(observer => {
+    this.sqliteService.registerUser(user.username, user.email, user.password).then(async () => {
+      console.log('Usuario registrado en SQLite:', user);
+
+     
+      if (navigator.onLine) {
+        this.syncUserWithAPI(user).subscribe(() => {
+          console.log('Usuario sincronizado con la API');
+        });
+      }
+
+      observer.next(user);
+      observer.complete();
+    }).catch((error) => {
+      console.error('Error al registrar usuario en SQLite:', error);
+      observer.error(error);
     });
-  }
+  });
+}
+
+
+
   
   // Cerrar sesión en SQLite
   async logoutUser(): Promise<void> {
@@ -128,6 +124,45 @@ export class UserService {
     });
   }
 
+  recoverPassword(username: string): Observable<boolean> {
+    return new Observable(observer => {
+      // Intentar buscar el usuario en la base de datos local (SQLite)
+      this.sqliteService.getUserByUsername(username).then(user => {
+        if (user) {
+          console.log('Usuario encontrado en SQLite, se envía un correo de recuperación o se maneja la lógica.');
+          observer.next(true);  // Devolver true si se encuentra en SQLite
+          observer.complete();
+        } else {
+          // Si no está en SQLite, verificar en la API (si hay conexión)
+          if (navigator.onLine) {
+            this.http.get<ClUser[]>(`${this.apiUrl}?username=${username}`, this.httpOptions)
+              .pipe(
+                map(users => users.length > 0),
+                catchError(() => of(false)) // En caso de error, devolvemos false
+              )
+              .subscribe(exists => {
+                if (exists) {
+                  console.log('Usuario encontrado en la API, se envía un correo de recuperación o se maneja la lógica.');
+                  observer.next(true);  // Devolver true si se encuentra en la API
+                } else {
+                  console.log('Usuario no encontrado ni en SQLite ni en la API.');
+                  observer.next(false); // Devolver false si no se encuentra
+                }
+                observer.complete();
+              });
+          } else {
+            console.log('Sin conexión, no se puede recuperar la contraseña.');
+            observer.next(false);
+            observer.complete();
+          }
+        }
+      }).catch(error => {
+        console.error('Error en la recuperación de la contraseña:', error);
+        observer.error(error);  // Devolver error si ocurre algún problema
+      });
+    });
+  }
+
   // Eliminar un usuario en SQLite y sincronizar con la API
   deleteUser(id: number): Observable<void> {
     return new Observable(observer => {
@@ -150,6 +185,11 @@ export class UserService {
 // Obtener todos los usuarios desde SQLite
 async getUsersFromSQLite(): Promise<ClUser[]> {
   return await this.sqliteService.getUsers();
+}
+
+ // Método para obtener un usuario por nombre de usuario
+ async getUserByUsername(username: string): Promise<any> {
+  return await this.sqliteService.getUserByUsername(username);
 }
 
 }

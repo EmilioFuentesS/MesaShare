@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { BarcodeScanner, SupportedFormat } from '@capacitor-community/barcode-scanner';
+import { BarcodeScanner, SupportedFormat } from '@capacitor-community/barcode-scanner'; // Plugin QR
 import { AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { QrService } from '../services/GenerarQrAPI/qr.service'; // Importar el servicio
@@ -99,6 +99,8 @@ export class CredencialAdminPage implements OnInit {
     }
   }
 
+  //  ADMINISTRADORES DEFINIDOS VALIDADOS CON QR //
+
   async handlePredefinedCodes(content: string) {
     console.log('Contenido del QR escaneado:', content);
     
@@ -125,7 +127,7 @@ export class CredencialAdminPage implements OnInit {
     }
   }
   
-
+//  ESCANEA LOS MESEROS CREADOS  //
   async validateLocalMesero(textoQR: string) {
     console.log('Validando en SQLite el texto:', textoQR);
     try {
