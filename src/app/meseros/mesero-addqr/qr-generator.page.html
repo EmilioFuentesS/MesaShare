@@ -1,4 +1,4 @@
-<ion-header> 
+<ion-header>
   <ion-toolbar>
     <!-- Botón de retroceso -->
     <ion-buttons slot="start">
@@ -8,44 +8,52 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
+<ion-content class="ion-padding modern-form">
+  <!-- Imagen decorativa -->
+  <div class="image-container">
+    <ion-img src="assets/imgs/QrGenerar.png" alt="Generar QR"></ion-img>
+  </div>
+
   <!-- Campo Nombre del mesero -->
-  <ion-item>
+  <ion-item class="form-field">
     <ion-label position="floating">Nombre del mesero</ion-label>
-    <ion-input [(ngModel)]="meseroNombre" placeholder="Ingresa el nombre del mesero"></ion-input>
+    <ion-input [(ngModel)]="meseroNombre" placeholder="Escribe el nombre"></ion-input>
   </ion-item>
 
   <!-- Campo Texto para el código QR -->
-  <ion-item>
+  <ion-item class="form-field">
     <ion-label position="floating">Texto para el código QR</ion-label>
-    <ion-input [(ngModel)]="qrCodeText" placeholder="Ingresa el texto aquí"></ion-input>
+    <ion-input [(ngModel)]="qrCodeText" placeholder="Texto para el QR"></ion-input>
   </ion-item>
 
   <!-- Botón para generar el código QR -->
-  <ion-button expand="block" (click)="generateQRCode()" color="primary" class="button-generar-qr">
-    Generar y Guardar QR
-  </ion-button>
+  <div class="button-container">
+    <button class="custom-button button-qr" (click)="generateQRCode()">
+      <ion-icon name="qr-code-outline"></ion-icon> Generar y Guardar QR
+    </button>
+  </div>
 
   <!-- Mostrar el código QR generado si existe -->
   <div *ngIf="qrCodeImage" class="qr-container">
     <h2>Código QR Generado:</h2>
     <img [src]="qrCodeImage" alt="Código QR" class="qr-image">
-    
-    <!-- Botón para descargar el PDF -->
-<ion-button expand="block" color="secondary" (click)="downloadQRCode(qrCodeImage, meseroNombre)">
-  Descargar Credencial en PDF
-</ion-button>
 
-   <!-- Botón para compartir el PDF -->
-    <ion-button expand="block" color="tertiary" (click)="shareQRCode()">
-     Compartir Credencial
-     </ion-button>
+    <!-- Botones alineados uno al lado del otro -->
+    <div class="button-group">
+      <button class="custom-button button-pdf" (click)="downloadQRCode(qrCodeImage, meseroNombre)">
+        <ion-icon name="download-outline"></ion-icon> Descargar PDF
+      </button>
 
-    
+      <button class="custom-button button-share" (click)="shareQRCode()">
+        <ion-icon name="share-social-outline"></ion-icon> Compartir
+      </button>
+    </div>
   </div>
 
   <!-- Botón para volver a la lista de meseros -->
-  <ion-button expand="block" color="medium" routerLink="/meseros" class="button-volver">
-    Volver a Meseros
-  </ion-button>
+  <div class="button-container">
+    <button class="custom-button button-back" routerLink="/meseros">
+      <ion-icon name="arrow-back-outline"></ion-icon> Volver a Meseros
+    </button>
+  </div>
 </ion-content>

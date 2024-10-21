@@ -1,0 +1,51 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title></ion-title>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content>
+  <ion-card>
+    <ion-card-header>
+      <ion-title>Editar Perfil</ion-title>
+    </ion-card-header>
+    <ion-card-content>
+
+      <!-- Foto de perfil -->
+      <div class="profile-image">
+        <img *ngIf="profileImage; else noImage" [src]="profileImage" alt="Profile Image" />
+        <ng-template #noImage>
+          <ion-icon name="person-circle-outline" style="font-size: 100px;"></ion-icon>
+        </ng-template>
+        <ion-button expand="full" (click)="takeProfilePhoto()">Subir foto de perfil</ion-button>
+      </div>
+
+      <!-- Mostrar los campos de entrada solo si 'user' está definido -->
+      <ng-container *ngIf="user">
+        <!-- Formulario de edición del perfil -->
+        <ion-item>
+          <ion-label position="floating">Nombre de Usuario</ion-label>
+          <ion-input [(ngModel)]="user.username"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Correo Electrónico</ion-label>
+          <ion-input [(ngModel)]="user.email" type="email"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Contraseña</ion-label>
+          <ion-input [(ngModel)]="user.password" type="password"></ion-input>
+        </ion-item>
+
+        <!-- Botón para guardar los cambios -->
+        <ion-button expand="full" (click)="updateProfile()">Guardar Cambios</ion-button>
+      </ng-container>
+
+    </ion-card-content>
+  </ion-card>
+</ion-content>

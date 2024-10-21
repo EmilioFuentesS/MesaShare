@@ -1,40 +1,73 @@
 /* Estilos para el formulario de registro */
 .register-form {
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 15px;
-    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
-    box-sizing: border-box;
-    margin-top: 20px; /* Espacio superior para el formulario */
-  }
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 15px;
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  margin-top: 50px; /* Espacio superior para el formulario */
+  width: 90%; /* Ajuste del ancho del formulario */
+  max-width: 400px; /* Tamaño máximo del formulario */
+  margin-left: auto; /* Centramos el formulario horizontalmente */
+  margin-right: auto; /* Centramos el formulario horizontalmente */
+}
+
+/* Contenedor general para centrar el contenido */
+.form-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* Ocupa todo el alto disponible */
+  padding-top: 20px;
+}
+
+.validation-messages {
+  color: #d32f2f;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.required {
+  color: #e53935;
+  font-size: 16px;
+  margin-left: 5px;
+  vertical-align: middle;
+}
+
+ion-button[disabled] {
+  --background: #e6e5e5; /* Color de fondo cuando está deshabilitado */
+  --color: #000000; /* Color del texto cuando está deshabilitado */
+  --box-shadow: none; /* Sin sombra */
+  cursor: not-allowed; /* Cursor de no permitido */
+}
+
+ion-button {
+  --border-radius: 8px; /* Bordes redondeados */
+  --padding: 12px 16px; /* Espaciado interno */
+  --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra */
+  --font-size: 16px; /* Tamaño de la fuente */
+  --font-weight: bold; /* Negrita */
+}
+
   
-  .validation-messages {
-    color: #d32f2f;
-    font-size: 12px;
-    margin-top: 5px;
-  }
-  
-  .required {
-    color: #e53935;
-    font-size: 16px;
-    margin-left: 5px;
-    vertical-align: middle;
-  }
-  
-  ion-button[disabled] {
-    --background: #e6e5e5; /* Color de fondo cuando está deshabilitado */
-    --color: #000000; /* Color del texto cuando está deshabilitado */
-    --box-shadow: none; /* Sin sombra */
-    cursor: not-allowed; /* Cursor de no permitido */
-  }
-  
-  ion-button {
-    --border-radius: 8px; /* Bordes redondeados */
-    --padding: 12px 16px; /* Espaciado interno */
-    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra */
-    --font-size: 16px; /* Tamaño de la fuente */
-    --font-weight: bold; /* Negrita */
-  }
-  
+
+.image-container {
+  display: flex;
+  justify-content: center; /* Centra horizontalmente la imagen */
+  margin-top: 11%; /* Empuja la imagen hacia la parte inferior */
+}
+
+ion-img {
+  width: 70%; /* Ajusta el tamaño de la imagen */
+  height: auto; /* Mantiene la proporción de la imagen */
+  border-radius: 10px; /* Bordes redondeados para la imagen */
+}
+.content {
+  display: flex;
+  flex-direction: column; /* Apila los elementos verticalmente */
+  height: 100vh; /* Asegura que el contenido ocupe toda la altura de la vista */
+  padding: 20px; /* Espaciado alrededor del contenido */
+  box-sizing: border-box; /* Incluye padding en el cálculo del ancho/alto total */
+}

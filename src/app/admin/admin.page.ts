@@ -1,7 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core'; 
 import { IonMenu } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { MesaAPIService } from '../services/ProductosAPI/mesa-api.service'; 
+import { MesaAPIService } from '../services/ProductosAPI/mesa-api.service';
+import { SQLiteService } from '../services/SQLite/sqlite.service'; 
 import { AlertController, LoadingController } from '@ionic/angular';
 import { ClProducto } from '../services/ProductosAPI/model/ClProducto';
 
@@ -22,30 +23,49 @@ export class AdminPage implements OnInit {
     private router: Router, 
     private mesaAPIService: MesaAPIService, 
     private alertController: AlertController, 
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
+    private sqliteService: SQLiteService
   ) {}
 
-  ngOnInit() {
-    // Suscribirse al Observable de productos para recibir actualizaciones en tiempo real
-    this.mesaAPIService.getProductosObservable().subscribe((productos) => {
-      this.productos = productos; // Actualización automática de la lista
-    });
+  // Se ejecuta cada vez que la vista es visible
+ionViewWillEnter() {
+  this.cargarProductos(); // Recargar la lista de productos cuando regrese a la vista
+}
 
-    // Cargar los productos cuando se inicia el componente
-    this.cargarProductos();
+// Método para cargar los productos desde SQLite y sincronizar con la API
+async cargarProductos() {
+  const loading = await this.loadingController.create({
+    message: 'Cargando productos...',
+  });
+  await loading.present();
+
+  try {
+    // Cargar productos desde SQLite
+    this.productos = await this.sqliteService.getProductos();
+
+    // Si hay conexión a Internet, sincronizar con la API
+    if (navigator.onLine) {
+      await this.mesaAPIService.syncWithAPI(); // Sincronizar los cambios pendientes con la API
+      this.productos = await this.sqliteService.getProductos(); // Actualizar la lista de productos después de la sincronización
+    }
+  } catch (error) {
+    console.error('Error al cargar productos:', error);
+    this.presentAlert('Error', 'No se pudo cargar la lista de productos.');
+  } finally {
+    await loading.dismiss();
   }
+}
 
-  // Método para cargar los productos desde el servicio (SQLite/API)
-  async cargarProductos() {
-    const loading = await this.loadingController.create({
-      message: 'Cargando productos...',
-    });
-    await loading.present();
+ngOnInit() {
+  // Suscribirse al Observable de productos para recibir actualizaciones en tiempo real
+  this.mesaAPIService.getProductosObservable().subscribe((productos) => {
+    this.productos = productos; // Actualización automática de la lista
+  });
 
-    this.mesaAPIService.cargarProductos(); // Cargar productos desde el servicio
+  // Cargar los productos cuando se inicia el componente
+  this.cargarProductos();
+}
 
-    loading.dismiss(); // Cerrar el loader cuando la carga termine
-  }
 
   // Método para seleccionar un producto para edición
   onEditarProducto(producto: ClProducto) {

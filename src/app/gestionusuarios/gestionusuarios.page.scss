@@ -1,0 +1,37 @@
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  ion-button {
+    --background: transparent;
+    --color: #007aff;
+    --border-radius: 5px;
+    border: 1px solid #007aff;
+  }
+  
+  ion-card {
+    margin-bottom: 15px;
+    --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  ion-card-title {
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  ion-card-content p {
+    font-size: 14px;
+    color: #666;
+  }
+  
+  ion-button[color="primary"] {
+    --background: #007aff;
+  }
+  
+  ion-button[color="danger"] {
+    --background: #ff3b30;
+    --color: white;
+  }
+  

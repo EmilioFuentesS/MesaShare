@@ -1,80 +1,181 @@
+/* Estilos para el contenedor principal */
+ion-content {
+  display: flex;
+  flex-direction: column; /* Apila los elementos verticalmente */
+  padding: 10px;
+  background-color: #f5f5f5; /* Color de fondo suave */
+  height: 100%; /* Asegúrate de que ocupe toda la altura */
+}
+
+/* Contenedor de bienvenida */
+.welcome-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px; /* Espacio inferior */
+}
+
+ion-img {
+  width: 50px; /* Ajustar tamaño de la imagen */
+  height: 50px; /* Ajustar tamaño de la imagen */
+  border-radius: 50%; /* Bordes redondeados */
+  margin-right: 15px; /* Espacio entre la imagen y el texto */
+}
+
+/* Estilo para el texto de bienvenida */
+.welcome-text {
+  font-size: 20px; /* Tamaño del texto */
+  font-weight: bold;
+  color: #333; /* Color oscuro para el texto */
+}
+
 .personas-container {
-    text-align: center;
-    margin: 20px 0;
-  }
-  
-  .contador-personas {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .numero-personas {
-    font-size: 24px;
-    font-weight: bold;
-    margin: 0 10px;
-  }
-  
-  ion-button {
-    --border-radius: 8px;  /* Bordes redondeados */
-    --padding-start: 8px;  /* Reduce el padding para hacerlo más cuadrado */
-    --padding-end: 8px;
-    --min-width: 40px;     /* Ancho mínimo */
-    --min-height: 40px;    /* Alto mínimo */
-  }
-  
-  ion-button.vaciar-pedido {
-    --background: #4caf50;   /* Verde claro */
-    --color: white;          /* Texto en blanco */
-    --border-radius: 8px;    /* Bordes redondeados */
-  }
+  text-align: center;
+  margin: 20px 0;
+}
+
+.contador-personas {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.numero-personas {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0 10px;
+}
+
+ion-button {
+  --border-radius: 8px;  /* Bordes redondeados */
+  --padding-start: 8px;  /* Reduce el padding para hacerlo más cuadrado */
+  --padding-end: 8px;
+  --min-width: 40px;     /* Ancho mínimo */
+  --min-height: 40px;    /* Alto mínimo */
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+/* Estilo para hacer que los botones sean pequeños y redondos */
+.boton-vaciar-pedido,
+.boton-pagar {
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --icon-size: 20px; /* Tamaño del ícono */
+  width: 40px;
+  height: 40px;
+  border-radius: 50%; /* Botón redondo */
+}
+
+/* Botón de vaciar pedido con color rojo */
+.boton-vaciar-pedido {
+  --background: #f44336; /* Rojo */
+  --color: white; /* Ícono blanco */
+}
+
+/* Botón de pagar con color verde */
+.boton-pagar {
+  --background: #4caf50; /* Verde para el botón de pagar */
+  --color: white; /* Ícono blanco */
+}
+
+.boton-vaciar-pedido ion-icon,
+.boton-pagar ion-icon {
+  font-size: 20px; /* Tamaño del ícono */
+}
+
+
+ion-button:hover {
+  transform: scale(1.05); /* Efecto de escala en hover */
+}
+
+/* Estilos para el total */
+.total {
+  font-size: 18px; /* Tamaño del texto total */
+  font-weight: bold; /* Negrita */
+  color: #4caf50; /* Color verde para total */
+  text-align: center; /* Centra el texto */
+}
 
 
 
+ion-button[color="danger"] {
+  --background: #f44336; /* Rojo para el botón de pagar */
+}
 
-  
-  .home-button {
-    --background: transparent; /* Sin fondo */
-    --border: none; /* Sin borde */
-    --color: var(--ion-text-color); /* Color del texto según el tema */
-    --padding: 0; /* Sin padding */
-    --border-radius: 0; /* Sin bordes redondeados */
-    --box-shadow: none; /* Sin sombra */
-    text-align: left; /* Alinear texto a la izquierda */
-  }
-  
-  .welcome-label {
-    font-size: 16px;
-    font-weight: bold;
-    margin-left: 16px;
-    color: #000;
-  }
-  
+/* Espaciado entre listas */
+ion-list {
+  margin-bottom: 20px; /* Espacio inferior para listas */
+}
 
-  .user-icon {
-    width: 20px; /* Tamaño del icono */
-    height: 30px; /* Tamaño del icono */
-    margin-right: 8px; /* Espacio entre el icono y el texto */
-  }
+/* Estilo para ion-card */
+ion-card {
+  margin-bottom: 20px; /* Espacio entre tarjetas */
+}
 
-  .staff-button {
-    font-size: 16px;
-    padding: 10px 20px;
-    border-radius: 25px;
-    color: white;
-    background-color: #1976d2;
-    text-transform: uppercase;
-    transition: background-color 0.3s ease, transform 0.3s ease;
+
+.image-container {
+  display: flex;
+  justify-content: center; /* Centra horizontalmente la imagen */
+  padding: 10px; /* Espaciado opcional alrededor de la imagen */
+}
+
+ion-img.app {
+  width: 100%; /* Ajusta el tamaño de la imagen */
+  height: auto; /* Mantiene la proporción de la imagen */
+  border-radius: 15px; /* Bordes redondeados */
+  justify-content: center;
   
-  
-  
-    &:hover {
-      background-color: #1565c0;
-      transform: scale(1.05);
-    }
-  
-    &:active {
-      background-color: #0d47a1;
-    }
-  }
+}
+
+
+// MENU
+/* Contenedor del menú con flexbox para centrar el contenido */
+.menu-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centra los elementos horizontalmente */
+  padding: 20px;
+}
+
+/* Botones minimalistas con enfoque empresarial */
+ion-button.Miperfil,
+ion-button.QrMesero,
+ion-button.rating,
+ion-button.Salir {
+  --background: transparent; /* Sin fondo adicional */
+  --color: #333; /* Color de texto e ícono empresarial */
+  width: 100%; /* Ocupa el ancho completo del contenedor */
+  text-align: center; /* Centrar el texto dentro del botón */
+  display: flex;
+  justify-content: center; /* Centrar el ícono y el texto en el botón */
+}
+
+/* Ajuste del ícono en los botones */
+ion-button.Miperfil ion-icon,
+ion-button.QrMesero ion-icon,
+ion-button.rating ion-icon,
+ion-button.Salir ion-icon {
+  margin-right: 10px;
+}
+
+/* Contenedor de logout con centrado */
+.logout-container {
+  display: flex;
+  justify-content: center; /* Centrar el botón de logout */
+  margin-top: 20px;
+  width: 100%;
+}
+
+/* Estilo adicional para el botón de logout */
+ion-button.Salir {
+  --color: #d32f2f; /* Color rojo solo para el botón de logout */
+}
+

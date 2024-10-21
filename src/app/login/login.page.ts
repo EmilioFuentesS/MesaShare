@@ -12,6 +12,7 @@ import { ToastController, AlertController } from '@ionic/angular'; // Importa To
 export class LoginPage implements OnInit {
   loginForm: FormGroup;
   field: string = ""; // Para mostrar campos faltantes
+  showImage = true; // Controla la visibilidad de la imagen
 
   constructor(
     private fb: FormBuilder, 
@@ -36,13 +37,13 @@ export class LoginPage implements OnInit {
       }
     }
     
-
     this.sqliteService.initializeDB('my_database', 'my_db_key').then(() => {
       console.log('Database initialized');
     }).catch(error => {
       console.error('Error initializing database:', error);
     });
   }
+
 
   // Método para validar los campos
   validateModel(): boolean {

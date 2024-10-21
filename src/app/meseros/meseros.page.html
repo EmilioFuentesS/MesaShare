@@ -1,21 +1,21 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <!-- Botón de retroceso -->
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
-
     <ion-title>Meseros</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true" class="ion-padding">
-  <!-- Botón para agregar mesero -->
   <ion-button expand="full" routerLink="/qr-generator" color="primary" class="agregar-button">
     Agregar Mesero
   </ion-button>
+  <!-- Botón de buscar meseros -->
+  <ion-button color="secondary" fill="outline" (click)="buscarMeseros()">
+    <ion-icon name="search-outline" slot="icon-only"></ion-icon>
+  </ion-button>
 
-  <!-- Lista de meseros -->
   <ion-list *ngIf="meseros.length > 0">
     <ion-card *ngFor="let mesero of meseros" class="mesero-card">
       <ion-card-header>
@@ -26,22 +26,18 @@
           <img [src]="mesero.qrCode" alt="Código QR" class="qr-image">
         </ion-thumbnail>
         <div class="botones-acciones">
-          <!-- Botón para editar mesero -->
           <ion-button color="tertiary" fill="outline" (click)="editMesero(mesero.id)">
             <ion-icon name="create-outline" slot="icon-only"></ion-icon>
           </ion-button>
 
-          <!-- Botón para eliminar mesero -->
-          <ion-button color="danger" fill="outline" (click)="deleteMesero(mesero.id)">
+          <ion-button color="danger" fill="outline" (click)="onEliminarMesero(mesero.id)">
             <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
           </ion-button>
 
-          <!-- Botón para descargar PDF con el QR -->
           <ion-button color="secondary" fill="outline" (click)="downloadQRCode(mesero.qrCode, mesero.nombre)">
             <ion-icon name="cloud-download-outline" slot="icon-only"></ion-icon>
           </ion-button>
 
-          <!-- Botón para compartir el QR -->
           <ion-button color="primary" fill="outline" (click)="shareQRCode(mesero.qrCode, mesero.nombre)">
             <ion-icon name="share-social-outline" slot="icon-only"></ion-icon>
           </ion-button>
@@ -50,8 +46,13 @@
     </ion-card>
   </ion-list>
 
-  <!-- Mensaje si no hay meseros -->
   <ion-item *ngIf="meseros.length === 0">
     <ion-label>No hay meseros registrados.</ion-label>
   </ion-item>
+
+  <!-- Contenedor de imágenes -->
+  <div class="image-container">
+    <ion-img src="assets/imgs/Character1.png" alt="Mesero 1" class="character-image left"></ion-img>
+    <ion-img src="assets/imgs/Character2.png" alt="Mesero 2" class="character-image right"></ion-img>
+  </div>
 </ion-content>

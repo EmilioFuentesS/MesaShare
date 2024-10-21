@@ -1,0 +1,69 @@
+.valoracion-content {
+    --ion-background-color: #f2f2f2;
+  }
+  
+  .valoracion-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 20px;
+  }
+  
+  .valoracion-text {
+    font-size: 1.2rem;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .image-container {
+    margin-bottom: 20px;
+  }
+  
+  .estrellas-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 300px; /* Ajusta el ancho máximo si es necesario */
+  }
+  
+  .estrella {
+    font-size: 2rem;
+    color: #ccc;
+    background: transparent;
+    padding: 0 1px; /* Espacio mínimo entre estrellas */
+  }
+  
+  .estrella.filled {
+    color: #f1c40f; /* Color de estrella llena */
+  }
+  
+  
+  .submit-button {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+  }
+  
+  .submit-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .valoracion-container ion-button {
+    --background: transparent;
+    --box-shadow: none;
+  }
+  
+  .valoracion-container ion-button.estrella {
+    margin: 0 5px;
+  }
+  
+  .valoracion-container ion-button.estrella.filled {
+    color: #ffc107; /* Amarillo para las estrellas llenas */
+  }
+  
+  

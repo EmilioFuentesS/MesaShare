@@ -59,7 +59,19 @@ const routes: Routes = [
   {
     path: 'mesero-edit/:id',
     loadChildren: () => import('./meseros/mesero-edit/mesero-edit.module').then(m => m.MeseroEditPageModule)
+  },  {
+    path: 'valoracion',
+    loadChildren: () => import('./valoracion/valoracion.module').then( m => m.ValoracionPageModule)
+  },
+  {
+    path: 'mi-perfil',
+    loadChildren: () => import('./mi-perfil/mi-perfil.module').then( m => m.MiPerfilPageModule)
+  },
+  {
+    path: 'gestionusuarios',
+    loadChildren: () => import('./gestionusuarios/gestionusuarios.module').then( m => m.GestionusuariosPageModule)
   }
+
 ];
 
 @NgModule({

@@ -11,67 +11,42 @@
 
 <ion-content [fullscreen]="true">
   <form [formGroup]="registrarForm" (ngSubmit)="registrarUsuario()" class="register-form">
-    
+
     <!-- Campo de Usuario -->
     <ion-item>
       <ion-label position="floating">Usuario<span class="required">*</span></ion-label>
       <ion-input formControlName="username"></ion-input>
     </ion-item>
-    <div *ngIf="registrarForm.get('username')?.touched" class="validation-messages">
-      <div *ngIf="registrarForm.get('username')?.hasError('required')">
-        El nombre de usuario es obligatorio.
-      </div>
-    </div>
 
     <!-- Campo de Correo Electrónico -->
     <ion-item>
       <ion-label position="floating">Correo Electrónico<span class="required">*</span></ion-label>
       <ion-input formControlName="email" type="email"></ion-input>
     </ion-item>
-    <div *ngIf="registrarForm.get('email')?.touched" class="validation-messages">
-      <div *ngIf="registrarForm.get('email')?.hasError('required')">
-        El correo electrónico es obligatorio.
-      </div>
-      <div *ngIf="registrarForm.get('email')?.hasError('email')">
-        Por favor, introduce un correo electrónico válido.
-      </div>
-    </div>
 
     <!-- Campo de Contraseña -->
     <ion-item>
       <ion-label position="floating">Contraseña<span class="required">*</span></ion-label>
       <ion-input type="password" formControlName="password"></ion-input>
     </ion-item>
-    <div *ngIf="registrarForm.get('password')?.touched" class="validation-messages">
-      <div *ngIf="registrarForm.get('password')?.hasError('required')">
-        La contraseña es obligatoria.
-      </div>
-      <div *ngIf="registrarForm.get('password')?.hasError('invalidPassword')">
-        <ul>
-          <li>Debe contener al menos 1 número.</li>
-          <li>Debe contener al menos 1 letra.</li>
-          <li>Debe contener al menos 1 mayúscula.</li>
-        </ul>
-      </div>
-    </div>
 
     <!-- Campo de Confirmar Contraseña -->
     <ion-item>
       <ion-label position="floating">Confirmar Contraseña<span class="required">*</span></ion-label>
       <ion-input type="password" formControlName="confirmPassword"></ion-input>
     </ion-item>
-    <div *ngIf="registrarForm.get('confirmPassword')?.touched" class="validation-messages">
-      <div *ngIf="registrarForm.get('confirmPassword')?.hasError('required')">
-        La confirmación de la contraseña es obligatoria.
-      </div>
-      <div *ngIf="registrarForm.hasError('passwordsMismatch')">
-        Las contraseñas no coinciden.
-      </div>
-    </div>
 
     <ion-button expand="full" type="submit" [disabled]="!registrarForm.valid">
       Registrar
     </ion-button>
-    
+
   </form>
+
+  <!-- Imagen decorativa -->
+  <div class="image-container">
+    <ion-img src="assets/imgs/Registrar.png" alt="Registro"></ion-img>
+  </div>
+
 </ion-content>
+
+

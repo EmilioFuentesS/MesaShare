@@ -14,8 +14,9 @@ import * as QRCode from 'qrcode'; // Importar la librería qrcode
   templateUrl: './meseros.page.html',
   styleUrls: ['./meseros.page.scss'],
 })
-export class MeserosPage implements OnInit {
+export class MeserosPage implements OnInit  {
   meseros: ClMesero[] = []; // Lista de meseros
+  showImages = true; // Controla la visibilidad de las imágenes
 
   constructor(
     private qrService: QrService, // Servicio para interactuar con la API y SQLite
@@ -28,7 +29,10 @@ export class MeserosPage implements OnInit {
   async ngOnInit() {
     // Inicializar la base de datos
     await this.sqliteService.initializeDB('my_database', 'mi_clave_secreta');
+  
   }
+
+
 
   // Se ejecuta cada vez que la vista es visible
   ionViewWillEnter() {
@@ -50,7 +54,7 @@ export class MeserosPage implements OnInit {
       }
     } catch (error) {
       console.error('Error al cargar meseros:', error);
-      this.showAlert('Error', 'No se pudo cargar la lista de meseros.');
+      this.presentAlert('Error', 'No se pudo cargar la lista de meseros.');
     } finally {
       await loading.dismiss();
     }
@@ -58,54 +62,50 @@ export class MeserosPage implements OnInit {
   
 
 // Método para eliminar un mesero
-async deleteMesero(meseroId: number) {
+async onEliminarMesero(meseroId: number) {
   const alert = await this.alertController.create({
     header: 'Confirmar eliminación',
     message: '¿Estás seguro que deseas eliminar este mesero?',
     buttons: [
-      { text: 'Cancelar', role: 'cancel' },
+      {
+        text: 'Cancelar',
+        role: 'cancel',
+      },
       {
         text: 'Eliminar',
         handler: async () => {
-          const loading = await this.loadingController.create({ message: 'Eliminando mesero...' });
+          // Mostrar el indicador de carga mientras se elimina el mesero
+          const loading = await this.loadingController.create({
+            message: 'Eliminando mesero...',
+          });
           await loading.present();
 
-          try {
-            // Eliminar el mesero primero de SQLite
-            await this.sqliteService.deleteMesero(meseroId);
-            console.log('Mesero eliminado de SQLite');
-
-            // Sincronizar con la API si hay conexión
-            if (navigator.onLine) {
-              await this.qrService.deleteMesero(meseroId).toPromise();
-              console.log('Mesero eliminado de la API');
-            } else {
-              // Guardar la operación para sincronizar más tarde
-              console.warn('Sin conexión a Internet. La operación de eliminación se sincronizará más tarde.');
-              this.qrService.queueDeleteOperation(meseroId); // Añadir a la cola de operaciones pendientes
+          // Intentar eliminar el mesero de la base de datos (SQLite y API)
+          this.qrService.deleteMesero(meseroId).subscribe({
+            next: async () => {
+              console.log(`Mesero ${meseroId} eliminado`);
+              await loading.dismiss();
+              this.presentAlert('Éxito', 'Mesero eliminado correctamente.');
+              this.loadMeseros(); // Actualizar la lista de meseros
+            },
+            error: async (err) => {
+              console.error('Error al eliminar mesero', err);
+              await loading.dismiss();
+              this.presentAlert('Error', 'No se pudo eliminar el mesero.');
             }
-
-            // Recargar la lista de meseros después de la eliminación
-            await this.loadMeseros(); // Asegúrate de que este método actualice la UI
-            this.showAlert('Éxito', 'Mesero eliminado correctamente.');
-          } catch (error) {
-            console.error('Error al eliminar mesero:', error);
-            this.showAlert('Error', 'No se pudo eliminar el mesero.');
-          } finally {
-            // Asegúrate de que se disuelva el loading en todas las condiciones
-            await loading.dismiss();
-          }
-        },
-      },
-    ],
+          });
+        }
+      }
+    ]
   });
+
   await alert.present();
 }
 
 
 
-  // Mostrar alerta
-  async showAlert(header: string, message: string) {
+  // Mostrar alertas
+  async presentAlert(header: string, message: string) {
     const alert = await this.alertController.create({
       header,
       message,
@@ -128,6 +128,33 @@ async deleteMesero(meseroId: number) {
   async editMesero(meseroId: number) {
     this.router.navigate(['/mesero-edit', meseroId]);
   }
+
+  // Método para listar los meseros
+  async buscarMeseros() {
+    let loading: HTMLIonLoadingElement | null = null;
+  
+    try {
+      // Mostrar el indicador de carga
+      loading = await this.loadingController.create({
+        message: 'Buscando meseros...',
+      });
+      await loading.present();
+  
+      // Cargar los meseros
+      await this.loadMeseros(); // Si `loadMeseros()` es asíncrono, espera que termine
+  
+    } catch (error) {
+      console.error('Error al buscar meseros:', error);
+      await this.presentAlert('Error', 'No se pudo realizar la búsqueda de meseros.');
+  
+    } finally {
+      // Asegurarse de que el indicador de carga se cierre, incluso si ocurre un error
+      if (loading) {
+        await loading.dismiss();
+      }
+    }
+  }
+  
 
   async downloadQRCode(qrCodeDataUrl: string, meseroNombre: string) {
     try {

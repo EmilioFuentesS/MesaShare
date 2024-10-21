@@ -9,7 +9,7 @@ import { SQLiteService } from '../SQLite/sqlite.service'; // Servicio SQLite
   providedIn: 'root'
 })
 export class QrService {
-  private apiUrl = 'http://192.168.182.190:3000/meseros'; // URL del JSON-server para los meseros
+  private apiUrl = 'http://192.168.154.190:3000/meseros'; // URL del JSON-server para los meseros
   private httpOptions = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
   private meserosSubject = new BehaviorSubject<ClMesero[]>([]); // BehaviorSubject para los meseros
   private operacionesPendientes: any[] = []; // Cola de operaciones pendientes para sincronización
@@ -117,27 +117,39 @@ export class QrService {
 
   deleteMesero(id: number): Observable<void> {
     return new Observable(observer => {
+      // Eliminar primero el mesero en SQLite
       this.sqliteService.deleteMesero(id).then(() => {
         console.log(`Mesero eliminado de SQLite con ID: ${id}`);
+        
+        // Verificar si hay conexión a Internet
         if (navigator.onLine) {
+          // Si hay conexión, eliminar también de la API
           this.http.delete<void>(`${this.apiUrl}/${id}`, this.httpOptions).pipe(
             tap(() => {
               console.log(`Mesero eliminado en la API con ID: ${id}`);
-              observer.next();
+              observer.next(); // Notificar que la eliminación fue exitosa
+              observer.complete(); // Completar el observable
             }),
             catchError((error) => {
               console.error('Error al eliminar mesero de la API:', error);
               observer.error(error); // Propagar el error al observador
-              return of(); // Asegúrate de devolver un observable vacío
+              return of(); // Asegúrate de devolver un observable vacío para evitar fallos
             })
           ).subscribe();
         } else {
+          // Si no hay conexión, añadir a las operaciones pendientes
           this.operacionesPendientes.push({ tipo: 'DELETE', id });
-          observer.next(); // Asegúrate de resolver el observable también si no hay conexión
+          console.warn('Sin conexión a Internet. La eliminación se sincronizará más tarde.');
+          observer.next(); // Notificar que la operación fue exitosa en SQLite
+          observer.complete(); // Completar el observable
         }
-      }).catch(err => observer.error(err));
+      }).catch(err => {
+        console.error('Error al eliminar mesero en SQLite:', err);
+        observer.error(err); // Propagar el error si ocurre en SQLite
+      });
     });
   }
+  
   
 
 
@@ -161,33 +173,41 @@ export class QrService {
     }
   }
 
-  // Escuchar cambios en la conectividad
-  private listenForOnline() {
+  listenForOnline() {
     window.addEventListener('online', async () => {
-      console.log('Conexión recuperada. Sincronizando operaciones pendientes...');
-      await this.syncOperacionesPendientes();
+      console.log('Conexión a Internet recuperada. Sincronizando operaciones pendientes...');
+      await this.syncOperacionesPendientes(); // Intentar sincronizar cuando vuelve la conexión
     });
   }
-
+  
   queueDeleteOperation(meseroId: number) {
     this.operacionesPendientes.push({ tipo: 'DELETE', id: meseroId });
-    this.listenForOnline(); // Escuchar cuando vuelva la conexión
+    this.listenForOnline(); // Iniciar la escucha de cuando vuelva la conexión
   }
   
 
-  // Sincronizar las operaciones pendientes cuando se recupere la conexión
-  private async syncOperacionesPendientes() {
+// Sincronizar las operaciones pendientes cuando se recupere la conexión
+private async syncOperacionesPendientes() {
+  try {
     for (const operacion of this.operacionesPendientes) {
       if (operacion.tipo === 'POST') {
         await this.addMesero(operacion.mesero).toPromise();
+        console.log('Mesero añadido correctamente después de reconexión');
       } else if (operacion.tipo === 'PUT') {
         await this.updateMesero(operacion.mesero).toPromise();
+        console.log('Mesero actualizado correctamente después de reconexión');
       } else if (operacion.tipo === 'DELETE') {
         await this.deleteMesero(operacion.id).toPromise();
+        console.log(`Mesero con ID ${operacion.id} eliminado correctamente después de reconexión`);
       }
     }
-    this.operacionesPendientes = []; // Limpiar la cola de operaciones después de sincronizar
+    // Limpiar la cola de operaciones pendientes una vez sincronizado
+    this.operacionesPendientes = [];
+  } catch (error) {
+    console.error('Error al sincronizar operaciones pendientes:', error);
+    // Podrías agregar manejo de errores adicional, como reintentos, si lo necesitas
   }
+}
 
   // Obtener un mesero por ID desde SQLite o API
   getMesero(id: number): Observable<ClMesero> {

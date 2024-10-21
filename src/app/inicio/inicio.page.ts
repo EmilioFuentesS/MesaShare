@@ -4,8 +4,12 @@ import { Router } from '@angular/router';
 import { MesaAPIService } from '../services/ProductosAPI/mesa-api.service'; // Asegúrate de usar la ruta correcta
 import { SQLiteService } from '../services/SQLite/sqlite.service';
 import { UserService } from '../services/UsuariosAPI/user.service'; // Servicio de usuarios
-import { AlertController, LoadingController } from '@ionic/angular';
+import { AlertController, LoadingController, ToastController } from '@ionic/angular';
 import { ClProducto } from '../services/ProductosAPI/model/ClProducto';
+import jsPDF from 'jspdf';
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import { Share } from '@capacitor/share';
+
 
 @Component({
   selector: 'app-inicio',
@@ -29,7 +33,9 @@ export class InicioPage implements OnInit {
     private loadingController: LoadingController, 
     private userService: UserService, 
     private mesaAPIService: MesaAPIService, 
-    private sqliteService: SQLiteService
+    private sqliteService: SQLiteService,
+    private toastController: ToastController,
+   
   ) {}
 
   async ngOnInit() {
@@ -43,12 +49,7 @@ export class InicioPage implements OnInit {
   } else {
     // Si no se encuentra el usuario, redirigir al login
     this.router.navigate(['/login']);
-  }
-      
-    
-
-    
-  
+  }    
 
     // Cargar los items del menú desde SQLite
     this.cargarMenuItems();
@@ -177,6 +178,92 @@ duplicarProductosPorCantidad(productos: ClProducto[]): ClProducto[] {
     return this.menuItems.length === 0;
   }
 
+  // Método para calcular el total de los pedidos de una persona
+calcularTotal(pedidos: any[]): number {
+  return pedidos.reduce((total, pedido) => total + pedido.precio, 0);
+}
+
+// Método para calcular el total global de todos los pedidos
+calcularTotalGlobal(): number {
+  let total = 0;
+
+  // Iterar sobre cada persona y sumar sus pedidos
+  for (const persona of this.personas) {
+    const pedidosDePersona = this.pedidos[persona];
+    if (pedidosDePersona) {
+      pedidosDePersona.forEach(pedido => {
+        total += pedido.precio; // Sumar el precio de cada pedido
+      });
+    }
+  }
+
+  return total; // Retornar el total acumulado
+}
+// Método para realizar el pago
+async realizarPago() {
+  if (this.personaSeleccionada) { // Verificar que hay una persona seleccionada
+    const totalAPagar = this.calcularTotal(this.pedidos[this.personaSeleccionada]);
+    
+    if (totalAPagar > 0) {
+      // Mostrar un mensaje de confirmación de pago realizado
+      const toast = await this.toastController.create({
+        message: `Pago realizado por un total de $${totalAPagar}`,
+        duration: 2000, // Duración en milisegundos
+        color: 'success', // Color del toast
+      });
+      await toast.present();
+
+      // Aquí podrías realizar otras acciones, como limpiar pedidos o redirigir a otra página
+    } else {
+      console.warn('No hay productos seleccionados para pagar.');
+    }
+  } else {
+    console.warn('No hay persona seleccionada para realizar el pago.');
+  }
+}
+
+async pagarPorPersona(persona: string) {
+  // Verificar si la persona tiene productos para pagar
+  if (persona && this.pedidos[persona] && this.pedidos[persona].length > 0) {
+    // Calcular el total a pagar
+    const totalAPagar = this.calcularTotal(this.pedidos[persona]);
+
+    if (totalAPagar > 0) {
+      // Procesar el pago (puedes agregar integración con un sistema de pago aquí)
+      console.log(`Procesando pago de $${totalAPagar} para ${persona}`);
+
+      // Mostrar el toast de confirmación del pago
+      const toast = await this.toastController.create({
+        message: `Pago realizado por un total de $${totalAPagar}`,
+        duration: 2000, // Duración en milisegundos
+        color: 'success', // Color del toast
+      });
+      await toast.present();
+
+      // Vaciar los pedidos de la persona después del pago
+      this.vaciarPedido(persona);
+
+    } else {
+      // Mostrar un mensaje si el total es 0
+      const toast = await this.toastController.create({
+        message: 'El total a pagar es 0, no se puede procesar el pago.',
+        duration: 2000,
+        color: 'warning',
+      });
+      await toast.present();
+    }
+  } else {
+    // Mostrar advertencia si no hay productos seleccionados para pagar
+    const toast = await this.toastController.create({
+      message: 'No hay productos seleccionados para pagar.',
+      duration: 2000,
+      color: 'warning',
+    });
+    await toast.present();
+    console.warn('No hay productos seleccionados para pagar.');
+  }
+}
+
   avanzar() {
     if (this.todoAsignado()) {
       console.log('Avanzar a la siguiente pantalla');
@@ -213,4 +300,120 @@ duplicarProductosPorCantidad(productos: ClProducto[]): ClProducto[] {
     });
     await alert.present();
   }
+
+  async generarBoletaPDF() {
+    const doc = new jsPDF();
+    const total = this.calcularTotalGlobal();
+    
+    try {
+      // Obtener imagen en base64 (optimizar esta parte)
+      const logoImg = 'assets/icon/favicon.png'; 
+      const imgData = await this.getBase64ImageFromURL(logoImg);
+      
+      // Agregar imagen al PDF
+      if (imgData) {
+        doc.addImage(imgData, 'PNG', 10, 10, 40, 40);
+      }
+      
+      // Título de la boleta
+      doc.setFontSize(18);
+      doc.text('MesaShare - Boleta de Compra', 60, 20);
+      doc.setFontSize(12);
+      
+      // Información de cliente y fecha
+      doc.text(`Cliente: ${this.username}`, 10, 60);
+      doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 10, 70);
+      
+      // Añadir productos
+      let yPosition = 90;
+      doc.setFontSize(14);
+      doc.text('Detalle de Productos:', 10, yPosition);
+      yPosition += 10;
+  
+      this.personas.forEach(persona => {
+        if (this.pedidos[persona] && this.pedidos[persona].length > 0) {
+          doc.setFontSize(12);
+          doc.text(`Pedidos de ${persona}`, 10, yPosition);
+          yPosition += 10;
+          this.pedidos[persona].forEach((pedido, index) => {
+            doc.text(`${index + 1}. ${pedido.nombre} - $${pedido.precio}`, 10, yPosition);
+            yPosition += 10;
+            if (yPosition > 270) {
+              doc.addPage();
+              yPosition = 10;
+            }
+          });
+        }
+      });
+  
+      // Añadir total
+      doc.setFontSize(16);
+      doc.text(`Total a Pagar: $${total}`, 10, yPosition + 10);
+  
+      // Guardar el PDF en el sistema de archivos del dispositivo
+      const pdfBlob = doc.output('blob');
+      const base64PDF = await this.blobToBase64(pdfBlob);
+  
+      const savedFile = await Filesystem.writeFile({
+        path: `boleta_${new Date().getTime()}.pdf`,
+        data: base64PDF,
+        directory: Directory.Documents,
+      });
+  
+      console.log('Archivo PDF guardado:', savedFile.uri);
+  
+      // Abrir el PDF
+      await this.openFile(savedFile.uri);
+  
+    } catch (error) {
+      console.error('Error al generar el PDF:', error);
+    }
+  }
+  
+  // Método para convertir Blob a base64
+  private async blobToBase64(blob: Blob): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+  
+  // Método para abrir el archivo PDF
+  async openFile(fileUri: string) {
+    try {
+      await Share.share({
+        title: 'Boleta PDF',
+        text: 'Aquí está la boleta de tu compra.',
+        url: fileUri,
+        dialogTitle: 'Compartir con',
+      });
+    } catch (error) {
+      console.error('Error al abrir el archivo:', error);
+    }
+  }
+  
+
+  // Función para convertir una imagen a base64 desde una URL
+  private getBase64ImageFromURL(url: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.setAttribute('crossOrigin', 'anonymous'); // Esto es importante
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0);
+        const dataURL = canvas.toDataURL('image/png');
+        resolve(dataURL);
+      };
+      img.onerror = (error) => {
+        reject(error);
+      };
+      img.src = url;
+    });
+  }
+
 }

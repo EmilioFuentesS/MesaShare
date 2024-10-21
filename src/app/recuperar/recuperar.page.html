@@ -18,6 +18,11 @@
     </ion-toolbar>
   </ion-header>
 
+    <!-- Imagen decorativa de recuperación de contraseña -->
+    <div class="image-container">
+      <ion-img src="assets/imgs/Recuperar.png" alt="Recuperar"></ion-img>
+    </div>
+
   <!-- Formulario de recuperación de contraseña -->
   <form [formGroup]="recuperarForm" (ngSubmit)="onSubmit()">
     <ion-item>
@@ -31,17 +36,26 @@
     </ion-note>
 
     <!-- Botón para enviar el formulario -->
-    <ion-button class="recuperar" expand="full" type="submit" [disabled]="!recuperarForm.valid">
-      Enviar Solicitud de Recuperación
-    </ion-button>
+    <button mat-raised-button color="primary" class="recuperar" type="submit" [disabled]="!recuperarForm.valid">
+    Recuperar
+    </button>
   </form>
 
-  <!-- Mostrar la contraseña recuperada en un mensaje -->
-  <ion-item *ngIf="recoveredPassword">
-    <ion-label color="primary">Contraseña recuperada:</ion-label>
-    <ion-text>{{ recoveredPassword }}</ion-text>
-    <ion-button fill="clear" color="primary" (click)="copyToClipboard()">
-      Copiar
+<!-- Mostrar la contraseña recuperada en un mensaje atractivo -->
+<ion-card *ngIf="recoveredPassword" class="password-card">
+  <ion-card-header>
+    <ion-card-title>Contraseña recuperada</ion-card-title>
+  </ion-card-header>
+
+  <ion-card-content>
+    <ion-text color="primary" class="recovered-password-text">{{ recoveredPassword }}</ion-text>
+    
+    <ion-button expand="block" fill="solid" color="tertiary" (click)="copyToClipboard()">
+      <ion-icon slot="start" name="copy-outline"></ion-icon>
+      Copiar contraseña
     </ion-button>
-  </ion-item>
+  </ion-card-content>
+</ion-card>
 </ion-content>
+
+

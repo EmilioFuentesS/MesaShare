@@ -1,8 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>Inicio de Sesión</ion-title>
-
-    <!-- Botón de volver con flecha hacia atrás -->
     <ion-buttons slot="end">
       <ion-button [routerLink]="['/home']">
         <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
@@ -12,48 +10,46 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="login-form">
-    
-    <!-- Campo de Usuario -->
-    <ion-item>
-      <ion-label position="floating">Usuario<span class="required">*</span></ion-label>
-      <ion-input formControlName="username"></ion-input>
-    </ion-item>
-    <div *ngIf="loginForm.get('username')?.touched" class="validation-messages">
-      <div *ngIf="loginForm.get('username')?.hasError('required')">
-        El usuario es obligatorio.
+  <div class="form-container">
+    <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="login-form">
+      <!-- Campo de Usuario -->
+      <ion-item>
+        <ion-label position="floating">Usuario<span class="required">*</span></ion-label>
+        <ion-input formControlName="username"></ion-input>
+      </ion-item>
+      <div *ngIf="loginForm.get('username')?.touched" class="validation-messages">
+        <div *ngIf="loginForm.get('username')?.hasError('required')">
+          El usuario es obligatorio.
+        </div>
       </div>
-    </div>
 
-    <!-- Campo de Contraseña -->
-    <ion-item>
-      <ion-label position="floating">Contraseña<span class="required">*</span></ion-label>
-      <ion-input type="password" formControlName="password"></ion-input>
-    </ion-item>
-    <div *ngIf="loginForm.get('password')?.touched" class="validation-messages">
-      <ul *ngIf="loginForm.get('password')?.hasError('required')">
-        <li>La contraseña es obligatoria.</li>
-      </ul>
-      <ul *ngIf="loginForm.get('password')?.hasError('passwordStrength')">
-        <li>Debe contener al menos 4 números.</li>
-        <li>Debe contener al menos 3 letras.</li>
-        <li>Debe contener al menos 1 mayúscula.</li>
-      </ul>
-    </div>
+      <!-- Campo de Contraseña -->
+      <ion-item>
+        <ion-label position="floating">Contraseña<span class="required">*</span></ion-label>
+        <ion-input type="password" formControlName="password"></ion-input>
+      </ion-item>
+      <div *ngIf="loginForm.get('password')?.touched" class="validation-messages">
+        <ul *ngIf="loginForm.get('password')?.hasError('required')">
+          <li>La contraseña es obligatoria.</li>
+        </ul>
+      </div>
 
-    <!-- Contenedor para los botones debajo -->
-    <div class="button-container">
       <!-- Botón de Ingresar -->
-      <ion-button class="login" expand="full" type="submit" [disabled]="!loginForm.valid" [routerLink]="['/inicio']">
+      <ion-button class="login" expand="full" type="submit" [disabled]="!loginForm.valid">
         Ingresar
       </ion-button>
 
-      <!-- Enlace subrayado para restablecer contraseña -->
+      <!-- Enlace de Restablecer Contraseña -->
       <ion-item class="link-item" [routerLink]="['/recuperar']" lines="none">
         <ion-label class="link-text">
           Restablecer Contraseña
         </ion-label>
       </ion-item>
-    </div>
-  </form>
+    </form>
+  </div>
+
+  <!-- Contenedor de la imagen, ahora debajo del formulario -->
+  <div class="image-container">
+    <ion-img src="assets/imgs/Login.png" alt="Login"></ion-img>
+  </div>
 </ion-content>

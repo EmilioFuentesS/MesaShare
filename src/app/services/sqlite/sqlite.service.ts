@@ -193,9 +193,9 @@ async registerUser(username: string, email: string, password: string): Promise<a
 
   // Obtiene la sesion
   async getActiveUser(): Promise<any> {
-    const query = `SELECT * FROM users WHERE active = 1`; // Check for any active users
+    const query = `SELECT * FROM users WHERE active = 1`; // checkea si esta activa la sesión
     const result = await this.db?.query(query);
-    return result?.values?.[0] || null; // Return the active user or null if none found
+    return result?.values?.[0] || null; 
   }
 
 // Recuperar usuario por nombre de usuario
@@ -503,6 +503,7 @@ async getMeseroByTexto(texto: string): Promise<ClMesero | null> {
       }
     }
   }
+
 // Método para eliminar un mesero de SQLite
 async deleteMesero(id: number): Promise<void> {
   await this.ensureDBReady();
@@ -511,9 +512,10 @@ async deleteMesero(id: number): Promise<void> {
       const query = `DELETE FROM meseros WHERE id = ?;`;
       const values = [id];
       await this.db.run(query, values);
-      console.log('Mesero eliminado de SQLite.');
+      console.log(`Mesero con ID ${id} eliminado de SQLite.`);
     } catch (error) {
       console.error('Error al eliminar mesero en SQLite:', error);
+      throw error; // Propagar el error para que sea capturado por el llamado a deleteMesero en la API
     }
   }
 }

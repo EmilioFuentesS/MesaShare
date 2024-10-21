@@ -1,88 +1,59 @@
-  /* Estilos para mejorar la alineación del formulario */
-ion-content {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 10px;
-      height: 100vh;
-      background-color: #f5f5f5;
-  }
-  
 /* Ajustes en el contenedor del formulario */
 .login-form {
-    width: 100%;
-    height: fit-content;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 15px;
-    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
-    box-sizing: border-box;
-    margin-top: 50px; /* Añadir margen superior para bajarlo */
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 15px;
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  margin-top: 20%; /* Espacio superior para el formulario */
+  width: 90%; /* Ajuste del ancho del formulario */
+  max-width: 400px; /* Tamaño máximo del formulario */
+  margin-left: auto; /* Centramos el formulario horizontalmente */
+  margin-right: auto; /* Centramos el formulario horizontalmente */
 }
 
-  
-/* Estilo para el contenedor de los botones */
-.button-container {
-    display: flex;
-    flex-direction: column;
-    gap: 16px; /* Espacio entre los botones */
-    margin: 32px 16px 16px; /* Espacio alrededor del contenedor: margen superior mayor, margen inferior normal, márgenes laterales normales */
-  }
-  
-  
+/* Estilo para los campos de entrada */
+ion-input {
+  margin-bottom: 16px; /* Espacio inferior entre campos */
+  --padding-start: 10px; /* Espaciado interno */
+  --padding-end: 10px; /* Espaciado interno */
+  border-radius: 8px; /* Bordes redondeados */
+}
 
-  /* Estilo para el botón de restablecer contraseña */
+/* Estilo para el botón de ingresar */
+ion-button.login {
+  --background: #4caf50; /* Color verde */
+  --color: white; /* Texto en blanco */
+  --border-radius: 8px; /* Bordes redondeados */
+  --padding: 12px; /* Espaciado interno */
+  font-size: 16px; /* Tamaño de la fuente */
+  margin-top: 10px; /* Espacio superior */
+}
+
+/* Estilo para el botón de restablecer contraseña */
 ion-button.recuperar {
-    --background: #f33a21; /* Color de fondo */
-    --color: white; /* Color del texto */
-    --border-radius: 8px; /* Bordes redondeados */
-    --padding: 12px 16px; /* Espaciado interno */
-    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra */
-    font-size: 16px; /* Tamaño de la fuente */
-    font-weight: bold; /* Negrita */
-    --padding-start: 8px;  /* Reduce el padding para hacerlo más cuadrado */
-    --padding-end: 8px;
-    --min-width: 40px;     /* Ancho mínimo */
-    --min-height: 40px;    /* Alto mínimo */
-  }
-
-
-  
-  ion-button.login {
-    --background: #4caf50;   /* Verde claro */
-    --color: white;          /* Texto en blanco */
-    --border-radius: 8px;    /* Bordes redondeados */
-    --padding-start: 8px;  /* Reduce el padding para hacerlo más cuadrado */
-    --padding-end: 8px;
-    --min-width: 40px;     /* Ancho mínimo */
-    --min-height: 40px;    /* Alto mínimo */
-  }
-  
-  /* Estilo para el botón deshabilitado */
-  ion-button[disabled] {
-    --background: #e6e5e5; /* Color de fondo cuando está deshabilitado */
-    --color: #000000; /* Color del texto cuando está deshabilitado */
-    --box-shadow: none; /* Sin sombra */
-    
-    cursor: not-allowed; /* Cursor de no permitido */
-  }
-  
-
-  /* Ajustes para mensajes de validación */
-  .validation-messages {
-      color: #d32f2f;
-      font-size: 12px;
-      margin-top: 5px;
-  }
-  
-
-/* Estilos para el asterisco de obligatorio */
-.required {
-    color: #e53935;
-    font-size: 16px;
-    margin-left: 5px;
-    vertical-align: middle;
+  --background: transparent; /* Fondo transparente */
+  --color: #007bff; /* Color azul para el texto */
+  font-size: 14px; /* Tamaño de la fuente */
+  text-decoration: underline; /* Subrayado */
+  margin-top: 10px; /* Espacio superior */
 }
+
+/* Estilo para el asterisco de obligatorio */
+.required {
+  color: #e53935; /* Color rojo */
+}
+
+/* Estilos para mensajes de validación */
+.validation-messages {
+  color: #d32f2f; /* Color de mensaje de error */
+  font-size: 12px; /* Tamaño de la fuente */
+  margin-top: 5px; /* Espacio superior */
+}
+
+
 
 /* Estilos para el enlace subrayado */
 .link-item {
@@ -96,3 +67,15 @@ ion-button.recuperar {
     cursor: pointer; /* Cursor de mano para el enlace */
   }
   
+
+  .image-container {
+    display: flex;
+    justify-content: center; /* Centra horizontalmente la imagen */
+    margin-top: 10%; /* Empuja la imagen hacia la parte inferior */
+  }
+  
+  ion-img {
+    width: 80%; /* Ajusta el tamaño de la imagen */
+    height: auto; /* Mantiene la proporción de la imagen */
+    border-radius: 10px; /* Bordes redondeados para la imagen */
+  }

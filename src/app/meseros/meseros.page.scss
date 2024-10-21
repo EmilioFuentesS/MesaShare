@@ -16,4 +16,22 @@
   .agregar-button {
     margin-bottom: 20px;
   }
-  
+
+  .image-container {
+    display: flex;
+    justify-content: space-between; /* Espacia las imágenes */
+    position: absolute; 
+    bottom: 0; /* Posiciona el contenedor en la parte inferior */
+    left: 0;
+    right: 0;
+    padding: 10px;
+}
+
+.character-image {
+    width: 40%; /* Ajusta el tamaño de las imágenes */
+    height: auto; /* Mantén la proporción */
+    border-radius: 10px; /* Bordes redondeados */
+    margin-bottom: 0; /* Asegúrate de que no haya margen inferior */
+}
+
+

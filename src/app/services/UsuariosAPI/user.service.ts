@@ -9,7 +9,7 @@ import { SQLiteService } from '../SQLite/sqlite.service'; // Servicio SQLite
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'http://192.168.182.190:3000/users'; // URL del JSON-server para los usuarios
+  private apiUrl = 'http://192.168.154.190:3000/users'; // URL del JSON-server para los usuarios
   private httpOptions = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
   private usersSubject = new BehaviorSubject<ClUser[]>([]); // BehaviorSubject para los usuarios
 

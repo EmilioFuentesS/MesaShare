@@ -1,21 +1,22 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>Inicio</ion-title>
-    <!-- Menú desplegable en la parte superior derecha -->
+    <ion-title>MesaShare</ion-title>
     <ion-buttons slot="end">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-
-<!-- Menú lateral -->
+<!-- Menú lateral --> 
 <ion-menu side="end" contentId="main-content">
   <ion-header>
-    <ion-toolbar>
+    <ion-toolbar color="primary">
       <ion-title>Menú</ion-title>
     </ion-toolbar>
   </ion-header>
-  <ion-content>
+  <ion-content class="menu-content">
+    <div class="image-container">
+      <ion-img class="app" src="assets/imgs/App.png" alt="Menu Image"></ion-img>
+    </div>
     <ion-list>
       <!-- Mostrar mesa seleccionada -->
       <ion-item>
@@ -27,25 +28,36 @@
 
       <!-- Opción de navegación a Home -->
       <ion-item>
-        <ion-button class="home-button" expand="full" routerLink="/home">
+        <ion-button expand="full" routerLink="/mi-perfil" class="Miperfil">
           <ion-icon name="home-outline" slot="start"></ion-icon>
-          Home
+          Mi Perfil
         </ion-button>
       </ion-item>
 
-      <!-- Botón de Logout -->
+      <!-- Opción de QR Mesero -->
       <ion-item>
-        <ion-button class="home-button" expand="full" (click)="logout()">
-          <ion-icon name="log-out-outline" slot="start"></ion-icon>
-          Cerrar sesión
+        <ion-button expand="full" [routerLink]="['/credencial-admin']" class="QrMesero">
+          <ion-icon name="qr-code-outline" slot="start"></ion-icon>
+          QR Mesero
         </ion-button>
       </ion-item>
-      <ion-item> 
-        <button mat-raised-button color="primary" class="staff-button" [routerLink]="['/credencial-admin']">
-      QR Mesero
-    </button> 
-      </ion-item>
     </ion-list>
+
+    <!-- Opción Valoración -->
+   <ion-item class="rating-button">
+     <ion-button expand="full" routerLink="/valoracion" class="rating">
+       <ion-icon name="star-outline" slot="start"></ion-icon>
+       Valorar
+     </ion-button>
+   </ion-item>
+
+    <!-- Botón de Logout -->
+    <div class="logout-container">
+      <ion-button expand="full" color="danger" (click)="logout()" class="Salir">
+        <ion-icon name="power-outline" slot="start"></ion-icon>
+        Cerrar sesión
+      </ion-button>
+    </div>
   </ion-content>
 </ion-menu>
 
@@ -56,12 +68,13 @@
     </ion-toolbar>
   </ion-header>
 
-  <!-- Mostrar el nombre del usuario -->
-  <div class="ion-padding">
-    <ion-label>Bienvenido {{ username }}</ion-label> <!-- Aquí se muestra el nombre de usuario -->
+  <div class="welcome-container">
+    <ion-img src="assets/imgs/User.png" alt="Usuario"></ion-img>
+    <div class="welcome-text">
+      <ion-label>Bienvenido, {{ username }}</ion-label>
+    </div>
   </div>
-  
-  <!-- Selección de número de personas con botones + y - -->
+
   <div class="personas-container ion-padding">
     <ion-label>Número de personas</ion-label>
     <div class="contador-personas">
@@ -71,7 +84,7 @@
     </div>
   </div>
 
-  <!-- Lista de personas -->
+  
   <ion-list>
     <ion-item *ngFor="let persona of personas">
       <ion-button expand="block" (click)="seleccionarPersona(persona)" [color]="personaSeleccionada === persona ? 'primary' : 'light'">
@@ -80,7 +93,6 @@
     </ion-item>
   </ion-list>
 
-  <!-- Menú de selección de ítems -->
   <ion-list *ngIf="menuItems.length > 0">
     <ion-card>
       <ion-card-header>
@@ -95,7 +107,6 @@
     </ion-card>
   </ion-list>
 
-  <!-- Lista de pedidos por persona con botón "Vaciar Pedido" -->
   <ion-list>
     <ion-card *ngFor="let persona of personas">
       <ion-card-header>
@@ -105,11 +116,35 @@
         <ion-item *ngFor="let pedido of pedidos[persona]">
           <ion-label>{{ pedido.nombre }} - ${{ pedido.precio }}</ion-label>
         </ion-item>
-        <ion-button class="vaciar-pedido" (click)="vaciarPedido(persona)">Vaciar Pedido</ion-button>
+        <div class="button-container">
+          <!-- Botón de Vaciar Pedido con ícono de papelera -->
+          <ion-button class="boton-vaciar-pedido" (click)="vaciarPedido(persona)">
+            <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        
+          <!-- Botón de Pagar con ícono de cash -->
+          <ion-button color="success" class="boton-pagar" (click)="pagarPorPersona(persona)">
+            <ion-icon name="cash-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </div>
+        
+        <ion-label class="total">Total: ${{ calcularTotal(pedidos[persona]) }}</ion-label>
       </ion-card-content>
     </ion-card>
   </ion-list>
 
-  <!-- Botón para avanzar al siguiente paso -->
-  <ion-button expand="full" (click)="avanzar()" [disabled]="!todoAsignado()">Siguiente</ion-button>
+  <!-- Total a Pagar -->
+  <ion-card>
+    <ion-card-content>
+      <ion-label>Total a Pagar: ${{ calcularTotalGlobal() }}</ion-label>
+    </ion-card-content>
+  </ion-card>
+
+  <div class="button-container">
+    <ion-button (click)="generarBoletaPDF()" expand="full">
+      <ion-icon name="document-outline" slot="start"></ion-icon>
+      Generar Boleta PDF
+    </ion-button>
+    <ion-button expand="full" color="danger" (click)="realizarPago()" [disabled]="!todoAsignado()">Pagar Total</ion-button>
+  </div>
 </ion-content>

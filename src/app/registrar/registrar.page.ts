@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit  } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ClUser } from '../services/UsuariosAPI/model/ClUser'; // Model for User
@@ -12,8 +12,9 @@ import { SQLiteService } from '../services/SQLite/sqlite.service'; // Importa el
   templateUrl: './registrar.page.html',
   styleUrls: ['./registrar.page.scss'],
 })
-export class RegistrarPage implements OnInit {
+export class RegistrarPage implements OnInit  {
   registrarForm: FormGroup; // Form for registration
+  showImage = true; // Controla la visibilidad de la imagen
 
   constructor(
     private fb: FormBuilder,
@@ -32,6 +33,8 @@ export class RegistrarPage implements OnInit {
   }
 
   ngOnInit() {}
+
+ 
 
   // Custom validator to match password and confirm password fields
   passwordMatchValidator(group: FormGroup) {

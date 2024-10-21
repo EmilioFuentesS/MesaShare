@@ -1,0 +1,42 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Gestión de Usuarios</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="button-container">
+    <ion-button (click)="openAddUserModal()">
+      <ion-icon name="person-add-outline"></ion-icon>
+      Agregar Usuario
+    </ion-button>
+  </div>
+
+  <ion-list *ngIf="usuarios.length > 0">
+    <ion-card *ngFor="let user of usuarios">
+      <ion-card-header>
+        <ion-card-title>{{ user.username }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>Email: {{ user.email }}</p>
+        <ion-buttons>
+          <ion-button color="primary" (click)="openEditUserModal(user)">
+            <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+          <ion-button color="danger" fill="outline" (click)="onEliminarUsuario(user.id)">
+            <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-card-content>
+    </ion-card>
+  </ion-list>
+
+  <ion-list *ngIf="usuarios.length === 0">
+    <ion-item>
+      <ion-label>No hay usuarios registrados.</ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

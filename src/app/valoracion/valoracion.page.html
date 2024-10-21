@@ -1,0 +1,34 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Valoración</ion-title>
+    <!-- Botón de retroceso -->
+       <ion-buttons slot="start">
+        <ion-back-button></ion-back-button>
+      </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="valoracion-content">
+  <div class="valoracion-container">
+    <ion-label class="valoracion-text">
+      ¡Ayúdanos a mejorar! Valora nuestro servicio y cuéntanos qué te ha parecido.
+    </ion-label>
+    
+    <div class="image-container">
+      <ion-img src="assets/imgs/ValoracionMS.png" alt="Valora nuestro trabajo"></ion-img>
+    </div>
+    
+    <div class="estrellas-container">
+      <ion-button *ngFor="let estrella of [1,2,3]; let i = index" 
+                  class="estrella" 
+                  [ngClass]="{'filled': i < rating}" 
+                  (click)="calificar(i + 1)">
+        ★
+      </ion-button>
+    </div>
+
+    <ion-button expand="full" (click)="submitRating()" class="submit-button">
+      ENVIAR VALORACIÓN
+    </ion-button>
+  </div>
+</ion-content>
